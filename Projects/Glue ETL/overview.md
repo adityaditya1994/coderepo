@@ -23,4 +23,5 @@ Analytics:
 Architecture 1:
 Purely on AWS
 
-![alt text](image-1.png)
+
+https://github.com/adityaditya1994/coderepo/blob/master/Projects/Glue%20ETL/image.png
