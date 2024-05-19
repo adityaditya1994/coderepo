@@ -1,0 +1,25 @@
+######Trust Relationships:
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::373459924264:root"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {
+                "StringLike": {
+                    "sts:ExternalId": "WM61699_SFCRole*"
+                }
+            }
+        }
+    ]
+}
+
+
+(highlighted yellow part, sometimes the stage created account and snowflake role account external id may vary so we put *)
+
+arn:aws:iam::373459924264:root -- ARN OF SNOWFLAKE
+
