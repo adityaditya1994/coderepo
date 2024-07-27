@@ -1,0 +1,5 @@
+%fs ls dbfs:/databricks-datasets/
+
+%fs head dbfs:/databricks-datasets/bikeSharing
+
+%fs head dbfs:/databricks-datasets/bikeSharing/README.md
