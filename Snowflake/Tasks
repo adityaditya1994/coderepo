@@ -1,0 +1,40 @@
+create or replace task demo_task
+warehouse = compute_wh 
+schedule = '1 MINUTE'
+as
+create or replace table sample_table_demo
+(id INT,
+Name string) ;
+
+show tasks ;
+
+alter task 
+demo_task
+resume ;
+
+create or replace  procedure 
+sample_proc()
+returns string
+Language JAVASCRIPT
+AS
+$$
+return 'This is test' ;
+$$
+;
+
+call sample_proc() ;
+
+select * from 
+table(information_schema.task_history()) ;
+
+create or replace task demo_task_1
+warehouse = compute_wh 
+schedule = '1 MINUTE'
+as
+call sample_proc()  ;
+
+show tasks ;
+
+alter task 
+demo_task_1
+resume ;
