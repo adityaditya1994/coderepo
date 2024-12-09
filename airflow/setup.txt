@@ -4,9 +4,11 @@ step 1: python3 -m venv air_venv
 step 2: source air_venv/bin/activate
 step3: export AIRFLOW_HOME=/home/aditya7/venv_airflow_batch30/airflow (make sure the airflow files are in this location during installatyion)
 
-Install Dependancies
+Install 
 
-step 4: pip3 install "apache-airflow[celery]==2.8.3" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.8.3/constraints-3.8.txt"
+cd to the directory where we have created the airflow home 
+
+step 4: pip3 install "apache-airflow[celery]==2.8.3" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.8.3/constraints-3.8.txt" -t .
 
 
 
