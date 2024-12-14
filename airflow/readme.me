@@ -1,0 +1,25 @@
+Setup connection in airflow
+
+{'connection_id': '<any name, e.g. snowflake-connection>',
+'connection_type': 'snowflake',
+'schema': 'ahs-airflow-schema',
+'login' : 'username , e.g. ADITYA121224',
+'password': 'XXXX',
+'extra' : '<can keep blank>',
+'account': 'ry85890.ap-southeast-1',
+'warehouse': 'COMPUTE_WH',
+'region': 'ap-southeast-1',
+'role': 'ACCOUNTADMIN'
+
+}
+
+
+
+----------------------------------------------------------------------------------
+snowflake account information: 
+'account_link': 'https://ry85890.ap-southeast-1.snowflakecomputing.com'
+'account_indentifier': 'KRMPROT.HB28498'
+used in python normal connection -- account_identifier
+used in SNOWFLAKE_SQLALCHEMY_URI -- ry85890.ap-southeast-1
+
+
