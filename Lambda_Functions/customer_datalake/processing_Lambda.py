@@ -22,11 +22,11 @@ def validate_customer_data(customers):
 
 def lambda_handler(event, context):
     # Get bucket and key information from the event
-    bucket_name = event['bucket_name']
-    landing_layer_key = event['landing_layer_key']
+    bucket_name = event['Records'][0]['s3']['bucket']['name']
+    file_key = event['Records'][0]['s3']['object']['key']
 
     # Read data from S3
-    response = s3_client.get_object(Bucket=bucket_name, Key=landing_layer_key)
+    response = s3_client.get_object(Bucket=bucket_name, Key=file_key)
     customer_data = json.loads(response['Body'].read())
 
     # Validate data
@@ -34,7 +34,7 @@ def lambda_handler(event, context):
 
     # Define keys for pass and fail files in the processing layer
     pass_key = 'processing/pass/customers_pass.json'
-    fail_key = 'processing/fail/customers_fail.json'
+    fail_key = 'failed/fail/customers_fail.json'
 
     # Write pass and fail data back to S3
     s3_client.put_object(Bucket=bucket_name, Key=pass_key, Body=json.dumps(pass_data))
