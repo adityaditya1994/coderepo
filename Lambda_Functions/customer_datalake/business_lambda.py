@@ -17,11 +17,11 @@ def aggregate_data(customers):
 
 def lambda_handler(event, context):
     # Get bucket and key information from the event
-    bucket_name = event['bucket_name']
-    pass_key = event['pass_key']
+    bucket_name = event['Records'][0]['s3']['bucket']['name']
+    file_key = event['Records'][0]['s3']['object']['key']
 
     # Read pass data from S3
-    response = s3_client.get_object(Bucket=bucket_name, Key=pass_key)
+    response = s3_client.get_object(Bucket=bucket_name, Key=file_key)
     pass_data = json.loads(response['Body'].read())
 
     # Perform aggregation
