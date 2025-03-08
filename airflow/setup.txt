@@ -12,16 +12,16 @@ step 4: pip3 install "apache-airflow[celery]==2.8.3" --constraint "https://raw.g
 
 
 
-
+##### sometimes if airflow is not installed properly we have to use python3 -m in the prefix
 step 5:  python3 -m airflow db migrate
-step 6: airflow users create --username admin --firstname Aditya --lastname Singhal --role Admin --email a
+step 6: python3 -m airflow users create --username admin --firstname Aditya --lastname Singhal --role Admin --email a
 bc@example.org
 
 pwd: 123456789
 
-airflow webserver --port 8080
+python3 -m airflow webserver --port 8080
 
-airflow scheduler
+python3 -m airflow scheduler
 
 You can access the airflow here. But tis ip address is the ip where ubuntu is running. 
 To check ububtu IP use 
