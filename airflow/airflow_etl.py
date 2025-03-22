@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
+from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator
 from airflow.utils.dates import days_ago
 import pandas as pd
 from sqlalchemy import create_engine
@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 SNOWFLAKE_CONN_ID = "snowflake-connection"
 
 # Database connection for pandas transformations
-SNOWFLAKE_SQLALCHEMY_URI = f'snowflake://ADITYA121224:XXXXXXX@ry85890.ap-southeast-1/ahs_airflow_data/ahs_airflow_schema?warehouse=COMPUTE_WH'
+SNOWFLAKE_SQLALCHEMY_URI = f'snowflake://ADITYA2203:XXXXXXXXX@MENPHPM-SO19591/ahs_airflow_data/ahs_airflow_schema?warehouse=COMPUTE_WH'
 
 # Define the DAG
 default_args = {
@@ -20,7 +20,7 @@ default_args = {
 with DAG(
     "snowflake_test_dag",
     default_args=default_args,
-    description="E-commerce ETL pipeline using PythonOperator and SnowflakeOperator",
+    description="E-commerce ETL pipeline using PythonOperator and SQLExecuteQueryOperator",
     schedule_interval=None,
     start_date=days_ago(1),
     catchup=False,
@@ -29,9 +29,9 @@ with DAG(
     def test_airflow():
         import snowflake.connector
         # Define your connection parameters
-        account = 'KRMPROT-HB28498'  # Your account identifier
-        user = 'ADITYA121224'             # Your username
-        password = 'XXXXXXX'     # Your password (replace with actual password)
+        account = 'MENPHPM-SO19591'  # Your account identifier
+        user = 'ADITYA2203'             # Your username
+        password = 'XXXXXXXXXX'     # Your password (replace with actual password)
         warehouse = 'COMPUTE_WH'   # Your warehouse name
         database = 'ahs_airflow_data'     # Your database name
         schema = 'ahs_airflow_schema'         # Your schema name
@@ -96,6 +96,8 @@ with DAG(
 
     # Define SQL transformations in Snowflake
     bronze_to_aggregated_sql = """
+    use database ahs_airflow_data ;
+    use schema ahs_airflow_schema ;
     INSERT INTO final_aggregated_table
     SELECT
         product_id,
@@ -128,9 +130,9 @@ with DAG(
         provide_context=True
     )
 
-    bronze_to_aggregated_task = SnowflakeOperator(
+    bronze_to_aggregated_task = SQLExecuteQueryOperator(
         task_id="bronze_to_aggregated",
-        snowflake_conn_id=SNOWFLAKE_CONN_ID,
+        conn_id=SNOWFLAKE_CONN_ID,
         sql=bronze_to_aggregated_sql
     )
 
