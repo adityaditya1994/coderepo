@@ -8,7 +8,7 @@ Setup connection in airflow
 'extra' : '<can keep blank>',
 'account': 'ry85890.ap-southeast-1',
 'warehouse': 'COMPUTE_WH',
-'region': 'ap-southeast-1',
+'region': 'ap-southeast-1', ######## now region may not needed as per the new login link from snowflake.  see new link . "https://menphpm-so19591.snowflakecomputing.com/console/login".
 'role': 'ACCOUNTADMIN'
 
 }
@@ -17,9 +17,9 @@ Setup connection in airflow
 
 ----------------------------------------------------------------------------------
 snowflake account information: 
-'account_link': 'https://ry85890.ap-southeast-1.snowflakecomputing.com'
-'account_indentifier': 'KRMPROT.HB28498'
+'account_link': 'https://menphpm-so19591.snowflakecomputing.com/'
+'account_indentifier': 'menphpm-so19591'
 used in python normal connection -- account_identifier
-used in SNOWFLAKE_SQLALCHEMY_URI -- ry85890.ap-southeast-1
+used in SNOWFLAKE_SQLALCHEMY_URI -- menphpm-so19591
 
 
