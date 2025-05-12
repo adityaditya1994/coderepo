@@ -28,7 +28,7 @@ def lambda_handler(event, context):
 
     # Define bucket and path
     bucket_name = os.environ['bucket_name']
-    landing_layer_key = 'landing/netflix_customers.json'
+    landing_layer_key = 'landing_rat/netflix_customers.json'
 
     # Upload data to S3
     s3_client.put_object(
