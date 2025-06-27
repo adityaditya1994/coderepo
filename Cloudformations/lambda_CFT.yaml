@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Lambda Function with minimal settings'
+
+Parameters:
+  LambdaRoleArn:
+    Type: String
+    Description: 'ARN of the IAM Role for Lambda function'
+
+Resources:
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-lambda-function'
+      Runtime: python3.9
+      Handler: index.lambda_handler
+      Role: !Ref LambdaRoleArn
+      Code:
+        ZipFile: |
+          import json
+          
+          def lambda_handler(event, context):
+              print("Lambda function executed successfully")
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'message': 'Hello from Lambda!',
+                      'event': event
+                  })
+              }
+      Timeout: 300
+      MemorySize: 128
+
+Outputs:
+  LambdaFunctionName:
+    Description: 'Name of the Lambda function'
+    Value: !Ref LambdaFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-LambdaFunctionName'
+  
+  LambdaFunctionArn:
+    Description: 'ARN of the Lambda function'
+    Value: !GetAtt LambdaFunction.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-LambdaFunctionArn'
