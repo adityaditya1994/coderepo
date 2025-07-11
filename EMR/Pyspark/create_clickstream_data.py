@@ -1,82 +1,96 @@
-import pandas as pd
-import random
-import json
-from datetime import datetime, timedelta
 
-# Function to generate clickstream data
-def generate_clickstream_data(num_records):
-    # Parameters
-    devices = ['mac', 'iphone', 'chrome', 'android', 'unix']
-    event_names = ['warranty', 'add to cart', 'order placed']
-    traffic_sources = ['google', 'facebook', 'twitter', 'email', 'direct']
+path = f'dbfs:/mnt/s3mount1903/databricks_output/test_output.parquet/'
 
-    # Function to generate random timestamps
-    def random_timestamp(start, end):
-        return int((start + (end - start) * random.random()).timestamp() * 1_000_000)
+# step 1: data read
+df_bronze = spark.read.parquet(path)
 
-    # Generate data
-    data = []
-    start_time = datetime.now() - timedelta(days=30)  # Start time 30 days ago
-    for _ in range(num_records):
-        # Randomly decide whether to assign None (null) or a value for certain fields
-        device = random.choice(devices + [None] * 2)  # 2 chances out of 7 to be None
-        ecommerce = json.dumps({"price": random.randint(50, 200), "unit": random.randint(1, 20)}) if random.random() > 0.2 else None  # 20% chance to be None
-        event_name = random.choice(event_names)
-        
-        # Generate timestamps
-        event_previous_timestamp = random_timestamp(start_time, datetime.now())
-        event_timestamp = random_timestamp(start_time, datetime.now())
-        
-        geo = json.dumps({
-            "city": random.choice(["Montrose", "Detroit", "Chicago", "New York", "Los Angeles"]),
-            "state": random.choice(["MI", "IL", "NY", "CA", "TX"])
-        }) if random.random() > 0.2 else None  # 20% chance to be None
-        
-        items = json.dumps([])  # Empty list for items
-        traffic_source = random.choice(traffic_sources + [None] * 2) if random.random() > 0.2 else None  # 20% chance to be None
-        
-        user_first_touch_timestamp = random_timestamp(start_time, datetime.now())
-        user_id = f"UA{random.randint(100000000, 999999999)}"
-        
-        # Append record to data list
-        data.append([
-            device,
-            ecommerce,
-            event_name,
-            event_previous_timestamp,
-            event_timestamp,
-            geo,
-            items,
-            traffic_source,
-            user_first_touch_timestamp,
-            user_id
-        ])
+display(df_bronze)
 
-    # Create DataFrame
-    columns = [
-        "device",
-        "ecommerce",
-        "event_name",
-        "event_previous_timestamp",
-        "event_timestamp",
-        "geo",
-        "items",
-        "traffic_source",
-        "user_first_touch_timestamp",
-        "user_id"
-    ]
-    df = pd.DataFrame(data, columns=columns)
+## bronze layer -- write this data 
 
-    return df
+df_bronze.write.mode('overwrite').format('parquet').save( f'dbfs:/mnt/s3mount1903/bronze_layer/clickstream_raw_data.parquet/')
 
-# User-defined number of rows
-df = generate_clickstream_data(1000)
 
-# Convert the Pandas DataFrame to a Spark DataFrame
-spark_df = spark.createDataFrame(df)
+## silver layer 
 
-# Save the Spark DataFrame to S3 using the mounted path
-output_file_path = '/mnt/s3dataread/databricks_input/clickstream_data_with_nulls.json'
-spark_df.write.mode('overwrite').json(output_file_path)
 
-# print(f"Sample clickstream data with null values generated and saved to {output_file_path}.")
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, from_json
+from pyspark.sql.types import StructType, StringType, LongType, IntegerType, DoubleType
+
+spark = SparkSession.builder.appName("ClickstreamETL").getOrCreate()
+
+
+campaign_data = [
+    ("email", "retention"),
+    ("facebook", "acquisition"),
+    ("google", "paid_search"),
+    ("twitter", "awareness")
+]
+
+campaign_df = spark.createDataFrame(campaign_data, ["traffic_source", "campaign_type"])
+
+bronze_df = spark.read.parquet(f'dbfs:/mnt/s3mount1903/bronze_layer/clickstream_raw_data.parquet/')
+
+
+
+silver_df = bronze_df.select('device', 'ecommerce.unit','ecommerce.price', 'event_name', 'traffic_source'  ).filter(' device is not null and unit is not null and price is not null and event_name is not null and traffic_source is not null  ') 
+
+
+
+# display(silver_df)
+# Join with campaign mapping
+silver_enriched_df = silver_df.join(campaign_df, on="traffic_source", how="left")
+
+# # Save to silver
+silver_enriched_df.write.mode('overwrite').format('parquet').save( f'dbfs:/mnt/s3mount1903/silver_layer/clickstream_silver_data.parquet/')
+
+
+##### gold layer 
+
+
+
+silver_df = spark.read.parquet(f'dbfs:/mnt/s3mount1903/silver_layer/clickstream_silver_data.parquet/')
+
+# display(silver_df)
+
+# Total sales = price * unit
+sales_df = silver_df.withColumn("sales_amount", col("price") * col("unit"))
+
+# display(sales_df)
+
+# # 1. Sales by device
+sales_by_device = sales_df.groupBy("device").sum("sales_amount").withColumnRenamed("sum(sales_amount)", "total_sales").sort('total_sales')
+
+# display(sales_by_device)
+
+# # 2. Sales by traffic source
+sales_by_source = sales_df.groupBy("traffic_source").sum("sales_amount").withColumnRenamed("sum(sales_amount)", "total_sales").sort('total_sales')
+
+# display(sales_by_source)
+
+
+# # 3. Total orders
+orders_df = silver_df.filter(col("event_name") == "order placed") \
+    .groupBy("device", "traffic_source") \
+    .count() \
+    .withColumnRenamed("count", "total_orders").sort('total_orders')
+
+# display(orders_df)
+
+# # 4. Conversion rate
+from pyspark.sql.functions import count, when
+
+conversion_df = silver_df.groupBy("device").agg(
+    count(when(col("event_name") == "order placed", True)).alias("orders"),
+    count(when(col("event_name") == "add to cart", True)).alias("carts")
+).withColumn("conversion_rate", col("orders") / col("carts"))
+
+
+# display(conversion_df)
+
+# # Save KPI to gold
+sales_by_device.coalesce(1).write.mode('overwrite').format('csv').save( f'dbfs:/mnt/s3mount1903/gold_layer/kpi_sales_by_device.csv/')
+sales_by_source.coalesce(1).write.mode('overwrite').format('csv').save( f'dbfs:/mnt/s3mount1903/gold_layer/kpi_sales_by_traffic.csv/')
+orders_df.coalesce(1).write.mode('overwrite').format('csv').save( f'dbfs:/mnt/s3mount1903/gold_layer/kpi_orders.csv/')
+conversion_df.coalesce(1).write.mode('overwrite').format('csv').save( f'dbfs:/mnt/s3mount1903/gold_layer/kpi_conversion.csv/')
