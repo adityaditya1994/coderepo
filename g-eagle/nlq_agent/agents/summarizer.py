@@ -15,6 +15,9 @@ def summarizer_node(state: dict, config: dict, llm) -> dict:
     """
     user_query = state.get("user_query", "")
     result = state.get("execution_result", {})
+    sql = state.get("sql", "")
+    query_plan = state.get("query_plan", {})
+    confidence = state.get("confidence_score", 0.0)
 
     # Format result for the prompt
     if isinstance(result, dict):
@@ -26,9 +29,13 @@ def summarizer_node(state: dict, config: dict, llm) -> dict:
     else:
         result_text = str(result)
 
+    import json
     prompt = SUMMARIZER_PROMPT.format(
         user_query=user_query,
         result=result_text,
+        sql=sql,
+        query_plan=json.dumps(query_plan, indent=2) if isinstance(query_plan, dict) else str(query_plan),
+        confidence=f"{confidence:.2f}",
     )
 
     response = llm.invoke(prompt)

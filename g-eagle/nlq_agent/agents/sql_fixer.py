@@ -18,11 +18,13 @@ def sql_fixer_node(state: dict, config: dict, llm) -> dict:
     sql = state.get("sql", "")
     error = state.get("execution_error", "")
     schema = state.get("schema", {})
+    sql_history = state.get("sql_history", [])
 
     # Step 1: Classify the error
     classify_prompt = ERROR_CLASSIFIER_PROMPT.format(
         sql=sql,
         error=error,
+        schema=json.dumps(schema, indent=2),
     )
     classify_response = llm.invoke(classify_prompt)
     classify_content = (
@@ -37,6 +39,7 @@ def sql_fixer_node(state: dict, config: dict, llm) -> dict:
         classification = {
             "error_type": "UNKNOWN",
             "affected_part": "unknown",
+            "root_cause": "Could not parse error classification",
             "fix_hint": "Review the full query",
         }
 
@@ -44,10 +47,12 @@ def sql_fixer_node(state: dict, config: dict, llm) -> dict:
     fix_prompt = SQL_FIXER_PROMPT.format(
         error_type=classification.get("error_type", "UNKNOWN"),
         affected_part=classification.get("affected_part", ""),
+        root_cause=classification.get("root_cause", ""),
         fix_hint=classification.get("fix_hint", ""),
         sql=sql,
         error=error,
         schema=json.dumps(schema, indent=2),
+        sql_history="\n---\n".join(sql_history[-3:]) if sql_history else "None",
     )
     fix_response = llm.invoke(fix_prompt)
     fix_content = (

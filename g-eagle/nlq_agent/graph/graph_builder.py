@@ -6,7 +6,7 @@ with all nodes, edges, conditional edges, and checkpointing.
 from functools import partial
 
 from langgraph.graph import StateGraph, END
-from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoint.memory import MemorySaver
 
 from graph.state import AgentState
 from graph.edges import should_retry, after_validation
@@ -138,7 +138,7 @@ def build_graph(config: dict):
     graph.add_edge("memory_writer", END)
 
     # Enable checkpointing (session persistence)
-    memory = SqliteSaver.from_conn_string("checkpoints.db")
+    memory = MemorySaver()
 
     return graph.compile(
         checkpointer=memory,

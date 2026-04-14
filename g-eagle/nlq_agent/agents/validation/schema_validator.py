@@ -33,7 +33,7 @@ class SchemaValidator:
         # Extract column-like references from SQL (rough heuristic)
         # This catches patterns like: table.column, alias.column, bare column
         sql_upper = sql.upper()
-        tokens = re.findall(r'[\w]+\.[\w]+|(?<=SELECT\s)[\w]+|(?<=,\s*)[\w]+', sql, re.IGNORECASE)
+        tokens = re.findall(r'\b(\w+\.\w+)\b|\b(\w+)\b', sql)
 
         # Check table names exist
         for table_name in schema.keys():

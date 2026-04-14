@@ -31,11 +31,19 @@ def sql_generator_node(state: dict, config: dict, llm) -> dict:
     # Build a simple join map from schema (tables sharing column names)
     join_map = _infer_join_map(schema)
 
+    # Format memory context for the prompt
+    memory_ctx = state.get("memory_context", {})
+    similar_patterns = memory_ctx.get("similar_patterns", [])
+    memory_text = "None available"
+    if similar_patterns:
+        memory_text = json.dumps(similar_patterns[:3], indent=2)
+
     prompt = SQL_GENERATOR_PROMPT.format(
         dialect=dialect,
         query_plan=json.dumps(query_plan, indent=2),
         schema=json.dumps(schema, indent=2),
         join_map=json.dumps(join_map, indent=2),
+        memory_context=memory_text,
     )
 
     response = llm.invoke(prompt)

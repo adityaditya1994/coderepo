@@ -75,7 +75,7 @@ class LongTermMemory:
                 state.get("summary", ""),
                 feedback,
                 state.get("confidence_score", 0.0),
-                datetime.utcnow().isoformat(),
+                datetime.now(tz=None).astimezone().isoformat(),
             ),
         )
         conn.commit()

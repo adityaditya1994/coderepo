@@ -4,6 +4,7 @@ into a structured analytical plan (JSON) without writing SQL.
 """
 
 import json
+from datetime import date
 
 from prompts.query_planner import QUERY_PLANNER_PROMPT
 
@@ -27,6 +28,7 @@ def query_planner_node(state: dict, config: dict, llm) -> dict:
             json.dumps(metrics_context, indent=2)
             if isinstance(metrics_context, dict) else str(metrics_context)
         ),
+        today_date=date.today().isoformat(),
     )
 
     response = llm.invoke(prompt)

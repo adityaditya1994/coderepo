@@ -5,7 +5,7 @@ user intent, monitors confidence, and decides routing.
 
 import json
 
-from prompts.supervisor import SUPERVISOR_PROMPT
+from prompts.supervisor import SUPERVISOR_DECISION_PROMPT
 
 
 def supervisor_node(state: dict, config: dict, llm) -> dict:
@@ -43,10 +43,11 @@ def supervisor_node(state: dict, config: dict, llm) -> dict:
             check = validation.get(check_key, {})
             issues.extend(check.get("issues", []))
 
-    prompt = SUPERVISOR_PROMPT.format(
+    prompt = SUPERVISOR_DECISION_PROMPT.format(
         user_query=user_query,
         confidence_score=confidence,
         retry_count=retry_count,
+        max_retries=max_retries,
         validation_result=json.dumps(validation, indent=2),
         issues=json.dumps(issues),
     )
