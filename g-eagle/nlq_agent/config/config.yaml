@@ -1,0 +1,36 @@
+llm:
+  provider: openai          # openai | anthropic | gemini
+  model: gpt-4o
+  temperature: 0.0
+
+database:
+  provider: athena          # athena | snowflake | postgres | bigquery
+  athena:
+    region: us-east-1
+    s3_output: s3://your-bucket/athena-results/
+    database: your_db
+
+discovery:
+  sources:
+    - glue
+    - pinecone
+    - datahub
+    - flatfile
+  top_k: 5                  # Top K tables to return
+
+retry:
+  max_attempts: 3           # Configurable N
+
+pinecone:
+  index_name: schema-metadata
+  embedding_model: text-embedding-3-small
+
+memory:
+  short_term: true
+  long_term: true
+  long_term_store: sqlite   # sqlite | dynamodb
+  semantic: true
+
+human_fallback:
+  enabled: true
+  confidence_threshold: 0.4  # Below this → ask human

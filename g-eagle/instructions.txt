@@ -1,0 +1,857 @@
+## 🏗️ System Overview
+
+`User Query (NL)
+      ↓
+ Supervisor Agent  ←──────────────────────────────┐
+      ↓                                            │
+ Discovery Agent (DataHub + Glue + Pinecone + FF)  │
+      ↓                                            │
+ Schema Retriever                                  │
+      ↓                                            │
+ Query Planner                                     │
+      ↓                                            │
+ SQL Generator ──→ Executor ──→ [Error?] ──→ SQL Fixer (x N retries)
+                      ↓
+              Validation Council
+              (Schema / Logic / Data / Business)
+                      ↓
+                 Summarizer
+                      ↓
+              Final Council Check
+                      ↓
+                  Output / Human Fallback
+                      ↓
+              Memory + KB Feedback Loop`
+
+---
+
+## 📁 Project Structure
+
+`nlq_agent/
+│
+├── config/
+│   ├── config.yaml              # All configurable knobs
+│   └── .env                     # Secrets (gitignored)
+│
+├── graph/
+│   ├── state.py                 # LangGraph state schema
+│   ├── graph_builder.py         # Builds the full agent graph
+│   └── edges.py                 # All conditional edge logic
+│
+├── agents/
+│   ├── supervisor.py
+│   ├── discovery/
+│   │   ├── discovery_agent.py   # Orchestrates all sources
+│   │   ├── glue_connector.py
+│   │   ├── datahub_connector.py
+│   │   ├── pinecone_connector.py
+│   │   ├── flatfile_connector.py
+│   │   └── discovery_council.py # Internal mini-council
+│   ├── schema_retriever.py
+│   ├── query_planner.py
+│   ├── sql_generator.py
+│   ├── executor/
+│   │   ├── executor_agent.py
+│   │   ├── base_executor.py     # Abstract class
+│   │   └── athena_executor.py
+│   ├── sql_fixer.py
+│   ├── validation/
+│   │   ├── council.py           # Aggregates all validators
+│   │   ├── schema_validator.py
+│   │   ├── logic_validator.py
+│   │   ├── data_validator.py
+│   │   └── business_validator.py
+│   ├── summarizer.py
+│   └── human_handoff.py
+│
+├── memory/
+│   ├── memory_manager.py
+│   ├── short_term.py            # Session context (in-memory dict)
+│   ├── long_term.py             # SQLite / DynamoDB (query history)
+│   └── semantic_memory.py       # Pinecone (past query patterns)
+│
+├── knowledge_base/
+│   ├── metrics_store.py
+│   ├── metrics.json             # Org-wide metric definitions
+│   └── kb_updater.py            # Feedback loop → KB update
+│
+├── llm/
+│   └── llm_factory.py           # OpenAI / Anthropic / Gemini switch
+│
+├── db/
+│   └── db_factory.py            # Athena / Snowflake / PG switch
+│
+├── prompts/
+│   ├── supervisor.py
+│   ├── discovery.py
+│   ├── query_planner.py
+│   ├── sql_generator.py
+│   ├── sql_fixer.py
+│   ├── validator.py
+│   └── summarizer.py
+│
+├── evaluation/
+│   └── evaluator.py             # Accuracy + scoring framework
+│
+└── main.py`
+
+---
+
+## ⚙️ Phase 1 — Foundation
+
+**Goal:** Config system, LLM factory, DB factory, LangGraph state, graph skeleton.
+
+### `config/config.yaml`
+
+yaml
+
+`llm:
+  provider: openai          # openai | anthropic | gemini
+  model: gpt-4o
+  temperature: 0.0
+
+database:
+  provider: athena          # athena | snowflake | postgres | bigquery
+  athena:
+    region: us-east-1
+    s3_output: s3://your-bucket/athena-results/
+    database: your_db
+
+discovery:
+  sources:
+    - glue
+    - pinecone
+    - datahub
+    - flatfile
+  top_k: 5                  # Top K tables to return
+
+retry:
+  max_attempts: 3           # Configurable N
+
+pinecone:
+  index_name: schema-metadata
+  embedding_model: text-embedding-3-small
+
+memory:
+  short_term: true
+  long_term: true
+  long_term_store: sqlite   # sqlite | dynamodb
+  semantic: true
+
+human_fallback:
+  enabled: true
+  confidence_threshold: 0.4  # Below this → ask human`
+
+---
+
+### `graph/state.py`
+
+python
+
+`from typing import TypedDict, Optional, List, Any
+
+class AgentState(TypedDict):
+    # Input
+    user_query: str
+    session_id: str
+
+    # Discovery
+    discovered_tables: List[dict]       # [{name, source, confidence, reason}]
+    selected_tables: List[str]
+    schema: dict                         # {table_name: [columns]}
+
+    # Query Planning
+    query_plan: dict                     # structured plan
+
+    # SQL
+    sql: str
+    sql_history: List[str]              # all versions of SQL tried
+
+    # Execution
+    execution_result: Optional[Any]
+    execution_error: Optional[str]
+    retry_count: int
+
+    # Validation
+    validation_result: dict             # {valid, issues, confidence}
+
+    # Summarization
+    summary: str
+
+    # Control
+    confidence_score: float
+    needs_human: bool
+    final_answer: Optional[str]
+
+    # Memory
+    memory_context: dict
+
+    # Errors / Trace
+    error_log: List[str]`
+
+---
+
+### `llm/llm_factory.py`
+
+python
+
+`from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+def get_llm(config: dict):
+    provider = config["llm"]["provider"]
+    model = config["llm"]["model"]
+    temp = config["llm"].get("temperature", 0.0)
+
+    if provider == "openai":
+        return ChatOpenAI(model=model, temperature=temp)
+    elif provider == "anthropic":
+        return ChatAnthropic(model=model, temperature=temp)
+    elif provider == "gemini":
+        return ChatGoogleGenerativeAI(model=model, temperature=temp)
+    else:
+        raise ValueError(f"Unsupported LLM provider: {provider}")`
+
+---
+
+### `db/db_factory.py`
+
+python
+
+`from abc import ABC, abstractmethod
+
+class BaseExecutor(ABC):
+    @abstractmethod
+    def execute(self, sql: str) -> dict:
+        pass
+
+class AthenaExecutor(BaseExecutor):
+    def __init__(self, config):
+        import boto3
+        self.client = boto3.client("athena", region_name=config["region"])
+        self.s3_output = config["s3_output"]
+        self.database = config["database"]
+
+    def execute(self, sql: str) -> dict:
+        # Athena async execution with polling
+        response = self.client.start_query_execution(
+            QueryString=sql,
+            QueryExecutionContext={"Database": self.database},
+            ResultConfiguration={"OutputLocation": self.s3_output}
+        )
+        query_id = response["QueryExecutionId"]
+        # poll until complete, return results
+        return self._poll_and_fetch(query_id)
+
+    def _poll_and_fetch(self, query_id):
+        import time
+        while True:
+            status = self.client.get_query_execution(
+                QueryExecutionId=query_id
+            )["QueryExecution"]["Status"]["State"]
+            if status in ["SUCCEEDED", "FAILED", "CANCELLED"]:
+                break
+            time.sleep(1)
+        if status != "SUCCEEDED":
+            raise Exception(f"Query {status}")
+        return self.client.get_query_results(QueryExecutionId=query_id)
+
+def get_executor(config):
+    provider = config["database"]["provider"]
+    if provider == "athena":
+        return AthenaExecutor(config["database"]["athena"])
+    # extend: snowflake, postgres, bigquery
+    raise ValueError(f"Unsupported DB: {provider}")`
+
+---
+
+## 🔍 Phase 2 — Discovery System
+
+**Goal:** Pull metadata from all 4 sources, internal council picks the best tables.
+
+### Discovery Flow
+
+`User Query
+    ↓
+┌──────────────────────────────┐
+│  Run all 4 connectors in     │
+│  parallel (async)            │
+│  Glue / Pinecone / DataHub   │
+│  / FlatFile                  │
+└──────────────┬───────────────┘
+               ↓
+     Discovery Council LLM
+     (scores + ranks + deduplicates)
+               ↓
+     Top K tables selected`
+
+### `agents/discovery/glue_connector.py`
+
+python
+
+`import boto3
+
+class GlueConnector:
+    def __init__(self, region="us-east-1"):
+        self.client = boto3.client("glue", region_name=region)
+
+    def search(self, query: str) -> list:
+        """Return tables with metadata as list of dicts."""
+        response = self.client.search_tables(SearchText=query, MaxResults=10)
+        results = []
+        for table in response.get("TableList", []):
+            results.append({
+                "source": "glue",
+                "name": table["Name"],
+                "database": table["DatabaseName"],
+                "columns": [
+                    {"name": c["Name"], "type": c["Type"]}
+                    for c in table.get("StorageDescriptor", {})
+                                   .get("Columns", [])
+                ],
+                "description": table.get("Description", "")
+            })
+        return results`
+
+### `agents/discovery/pinecone_connector.py`
+
+python
+
+`from pinecone import Pinecone
+from langchain_openai import OpenAIEmbeddings
+
+class PineconeConnector:
+    def __init__(self, config):
+        pc = Pinecone(api_key=config["PINECONE_API_KEY"])
+        self.index = pc.Index(config["pinecone"]["index_name"])
+        self.embedder = OpenAIEmbeddings(
+            model=config["pinecone"]["embedding_model"]
+        )
+
+    def search(self, query: str, top_k=5) -> list:
+        vector = self.embedder.embed_query(query)
+        results = self.index.query(vector=vector, top_k=top_k,
+                                   include_metadata=True)
+        return [
+            {
+                "source": "pinecone",
+                "name": m["metadata"]["table_name"],
+                "columns": m["metadata"]["columns"],
+                "description": m["metadata"].get("description", ""),
+                "score": m["score"]
+            }
+            for m in results["matches"]
+        ]`
+
+### `agents/discovery/discovery_council.py`
+
+**Prompt:**
+
+python
+
+`DISCOVERY_COUNCIL_PROMPT = """
+You are a senior data architect acting as a discovery council.
+
+You have received candidate tables from multiple metadata sources
+(Glue Catalog, Vector Search, DataHub, Flat Files).
+
+Some may be duplicates. Some may be irrelevant.
+
+User Query: {user_query}
+
+Candidate Tables:
+{candidates}
+
+Your Task:
+1. Deduplicate tables (same table from multiple sources = one entry)
+2. Score each table for relevance (0.0 to 1.0)
+3. Select the TOP {top_k} most relevant tables
+4. Explain why each was chosen
+
+Output JSON only:
+{{
+  "selected_tables": [
+    {{
+      "name": "table_name",
+      "database": "db_name",
+      "source": "glue|pinecone|datahub|flatfile",
+      "confidence": 0.0-1.0,
+      "reason": "why this table is relevant"
+    }}
+  ]
+}}
+"""`
+
+---
+
+## 🧠 Phase 3 — Query Intelligence
+
+### Query Planner Prompt
+
+python
+
+`QUERY_PLANNER_PROMPT = """
+You are a senior data analyst.
+
+Convert the user query into a structured analytical plan.
+Do NOT write SQL. Think in business terms.
+
+Rules:
+- Identify intent: aggregation | lookup | comparison | trend | ranking
+- Extract metrics (what to measure)
+- Extract dimensions (what to group by)
+- Normalize time filters into explicit date ranges
+- Do NOT invent columns not present in the schema
+- If intent is ambiguous, list alternatives
+
+User Query: {user_query}
+
+Available Tables and Schemas:
+{schema}
+
+Metrics Knowledge Base:
+{metrics_context}
+
+Output JSON only:
+{{
+  "intent": "aggregation|lookup|comparison|trend|ranking",
+  "metrics": ["revenue", "order_count"],
+  "dimensions": ["customer_id", "region"],
+  "filters": [
+    {{"column": "order_date", "operator": "between",
+      "value": ["2024-03-01", "2024-03-31"]}}
+  ],
+  "time_granularity": "daily|weekly|monthly|none",
+  "aggregation": "sum|avg|count|min|max",
+  "sorting": {{"column": "revenue", "order": "desc"}},
+  "limit": 10,
+  "ambiguities": []
+}}
+"""`
+
+### SQL Generator Prompt
+
+python
+
+`SQL_GENERATOR_PROMPT = """
+You are an expert SQL engineer.
+
+Generate a SQL query based on the query plan and schema.
+
+Database dialect: {dialect}
+
+Query Plan:
+{query_plan}
+
+Table Schemas:
+{schema}
+
+Join Relationships:
+{join_map}
+
+Rules:
+- Use ONLY columns that exist in the schema
+- Use correct join keys from join relationships
+- Add appropriate WHERE clauses for filters
+- Handle NULL values safely
+- Add aliases for readability
+- Do NOT use subqueries unless necessary
+- Prefer CTEs for complex queries
+
+Output: SQL query ONLY. No explanation.
+"""`
+
+---
+
+## 🔁 Phase 4 — Execution + Self-Healing
+
+### Error Classifier Prompt
+
+python
+
+`ERROR_CLASSIFIER_PROMPT = """
+You are an expert SQL debugger.
+
+Classify the execution error into exactly one category:
+
+Categories:
+- SYNTAX_ERROR: invalid SQL syntax
+- MISSING_COLUMN: column doesn't exist in table
+- MISSING_TABLE: table doesn't exist
+- JOIN_ERROR: incorrect join key or Cartesian product
+- EMPTY_RESULT: query ran but returned 0 rows
+- TIMEOUT: query exceeded time limit
+- PERMISSION_ERROR: access denied
+- UNKNOWN: cannot determine
+
+SQL:
+{sql}
+
+Error:
+{error}
+
+Output JSON only:
+{{
+  "error_type": "CATEGORY",
+  "affected_part": "which part of SQL caused it",
+  "fix_hint": "short suggestion for fix"
+}}
+"""`
+
+### SQL Fixer Prompt
+
+python
+
+`SQL_FIXER_PROMPT = """
+You are a senior data engineer fixing a broken SQL query.
+
+Error Type: {error_type}
+Affected Part: {affected_part}
+Fix Hint: {fix_hint}
+
+Original SQL:
+{sql}
+
+Error Message:
+{error}
+
+Schema (for reference):
+{schema}
+
+Rules:
+- Fix ONLY what is broken
+- Preserve the original analytical intent
+- Do NOT change business logic unless the error requires it
+- If EMPTY_RESULT, try relaxing filters or checking joins
+
+Output: Corrected SQL ONLY. No explanation.
+"""`
+
+### Retry Logic in LangGraph (edge function)
+
+python
+
+`def should_retry(state: AgentState) -> str:
+    config = load_config()
+    max_attempts = config["retry"]["max_attempts"]
+
+    if state["execution_error"] is None:
+        return "validate"                    # success → go to validation
+    elif state["retry_count"] < max_attempts:
+        return "fix_sql"                     # still retries left → fix
+    else:
+        return "human_fallback"              # exhausted → escalate`
+
+---
+
+## ✅ Phase 5 — Validation Council
+
+### Validation Council Prompt
+
+python
+
+`VALIDATION_COUNCIL_PROMPT = """
+You are a validation council reviewing a data query result.
+
+You must validate across 4 dimensions:
+
+1. SCHEMA VALIDATION
+   - Are all columns referenced valid?
+   - Are data types used correctly?
+
+2. LOGIC VALIDATION
+   - Is the join logic correct?
+   - Are filters semantically appropriate?
+   - Does the aggregation make sense for the intent?
+
+3. DATA SANITY
+   - Are there unexpected NULLs?
+   - Are numeric values in realistic ranges?
+   - Are there obvious outliers that seem like errors?
+
+4. BUSINESS VALIDATION
+   - Does the result match the metric definition?
+   - Is the business logic correctly applied?
+
+User Query: {user_query}
+Query Plan: {query_plan}
+SQL: {sql}
+Result Sample (first 10 rows): {result_sample}
+Metric Definitions: {metrics_context}
+
+Output JSON only:
+{{
+  "overall_valid": true|false,
+  "confidence": 0.0-1.0,
+  "schema_check": {{"passed": true, "issues": []}},
+  "logic_check": {{"passed": true, "issues": []}},
+  "data_sanity_check": {{"passed": true, "issues": []}},
+  "business_check": {{"passed": true, "issues": []}},
+  "recommendation": "proceed|retry|ask_user|escalate"
+}}
+"""`
+
+---
+
+## 📚 Phase 6 — Knowledge Base + Metrics Layer
+
+### `knowledge_base/metrics.json`
+
+json
+
+`{
+  "revenue": {
+    "definition": "Sum of (unit_price * quantity) from orders table",
+    "sql_expression": "SUM(o.unit_price * o.quantity)",
+    "table": "orders",
+    "filters": "WHERE o.status = 'completed'",
+    "approved": true,
+    "last_updated": "2024-01-01",
+    "updated_by": "user"
+  },
+  "active_users": {
+    "definition": "Distinct users with at least one event in the period",
+    "sql_expression": "COUNT(DISTINCT user_id)",
+    "table": "events",
+    "filters": "WHERE event_type IS NOT NULL",
+    "approved": true
+  }
+}`
+
+### Metric Approval Flow
+
+`Query Planner detects metric → Look up KB
+    ├── Found + approved → inject into SQL directly
+    ├── Found + not approved → show user, ask confirmation
+    └── Not found → ask user to define → store with approved=false → await approval`
+
+---
+
+## 🧠 Phase 7 — Memory System (3 Layers)
+
+`┌─────────────────────────────────────────────┐
+│              MEMORY MANAGER                 │
+├──────────────┬──────────────┬───────────────┤
+│  Short-Term  │  Long-Term   │   Semantic    │
+│  (session)   │  (SQLite)    │   (Pinecone)  │
+│              │              │               │
+│  Current     │  Query →     │  Past queries │
+│  context     │  SQL →       │  embedded for │
+│  retries     │  result →    │  similarity   │
+│  corrections │  feedback    │  retrieval    │
+└──────────────┴──────────────┴───────────────┘`
+
+### `memory/long_term.py` — Schema
+
+sql
+
+`CREATE TABLE query_history (
+    id TEXT PRIMARY KEY,
+    session_id TEXT,
+    user_query TEXT,
+    query_plan JSON,
+    sql_generated TEXT,
+    execution_success BOOLEAN,
+    retry_count INTEGER,
+    validation_passed BOOLEAN,
+    summary TEXT,
+    user_feedback TEXT,         -- thumbs up/down or correction
+    confidence_score FLOAT,
+    created_at TIMESTAMP
+);`
+
+### Memory Retrieval at Query Time
+
+python
+
+`MEMORY_CONTEXT_PROMPT = """
+Here are similar past queries that succeeded:
+
+{past_queries}
+
+Use these as reference for:
+- SQL patterns that worked
+- Metric definitions that were confirmed
+- Joins that were validated
+
+Do NOT copy them blindly. Adapt to current query.
+"""`
+
+---
+
+## 📊 Phase 8 — Summarizer
+
+### Summarizer Prompt
+
+python
+
+`SUMMARIZER_PROMPT = """
+You are a senior business analyst presenting data insights.
+
+User's Original Question:
+{user_query}
+
+Query Results:
+{result}
+
+Rules:
+- Answer the user's question DIRECTLY in the first sentence
+- Then provide supporting insights (trends, outliers, comparisons)
+- Use numbers from the data — do NOT hallucinate values
+- Keep language business-friendly, not technical
+- If data is insufficient to answer, say so clearly
+- Flag any anomalies in the data
+
+Format:
+1. Direct Answer
+2. Key Insights (2-3 bullet points)
+3. Caveats or data limitations (if any)
+"""`
+
+---
+
+## 🎯 Phase 9 — Supervisor
+
+### Supervisor Prompt
+
+python
+
+`SUPERVISOR_PROMPT = """
+You are the supervisor of a multi-agent data query system.
+
+Your responsibilities:
+1. Interpret the user's intent and route to appropriate agents
+2. Monitor confidence scores across all stages
+3. Resolve conflicts between agent outputs
+4. Decide when to retry, ask the user, or escalate to human
+
+Current State:
+User Query: {user_query}
+Confidence Score: {confidence_score}
+Retry Count: {retry_count}
+Validation Result: {validation_result}
+Issues Found: {issues}
+
+Decision Rules:
+- confidence > 0.7 AND validation passed → proceed to summarize
+- confidence 0.4-0.7 → retry with more context
+- confidence < 0.4 → ask user for clarification
+- retry_count >= max → escalate to human
+
+Output JSON only:
+{{
+  "decision": "proceed|retry|clarify|escalate",
+  "reasoning": "why",
+  "clarification_question": "if decision=clarify, what to ask"
+}}
+"""`
+
+---
+
+## 🔗 Phase 10 — Full LangGraph Graph
+
+python
+
+`# graph/graph_builder.py
+
+from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.sqlite import SqliteSaver
+
+def build_graph(config):
+    graph = StateGraph(AgentState)
+
+    # Add nodes
+    graph.add_node("supervisor",        supervisor_node)
+    graph.add_node("discovery",         discovery_node)
+    graph.add_node("schema_retriever",  schema_retriever_node)
+    graph.add_node("query_planner",     query_planner_node)
+    graph.add_node("sql_generator",     sql_generator_node)
+    graph.add_node("executor",          executor_node)
+    graph.add_node("sql_fixer",         sql_fixer_node)
+    graph.add_node("validator",         validation_council_node)
+    graph.add_node("summarizer",        summarizer_node)
+    graph.add_node("human_handoff",     human_handoff_node)
+    graph.add_node("memory_writer",     memory_writer_node)
+
+    # Entry point
+    graph.set_entry_point("supervisor")
+
+    # Linear happy path
+    graph.add_edge("supervisor",       "discovery")
+    graph.add_edge("discovery",        "schema_retriever")
+    graph.add_edge("schema_retriever", "query_planner")
+    graph.add_edge("query_planner",    "sql_generator")
+    graph.add_edge("sql_generator",    "executor")
+
+    # Retry loop
+    graph.add_conditional_edges("executor", should_retry, {
+        "validate":       "validator",
+        "fix_sql":        "sql_fixer",
+        "human_fallback": "human_handoff"
+    })
+    graph.add_edge("sql_fixer", "executor")
+
+    # Post-validation routing
+    graph.add_conditional_edges("validator", after_validation, {
+        "summarize":      "summarizer",
+        "retry":          "sql_generator",
+        "escalate":       "human_handoff"
+    })
+
+    graph.add_edge("summarizer",     "memory_writer")
+    graph.add_edge("human_handoff",  "memory_writer")
+    graph.add_edge("memory_writer",  END)
+
+    # Enable checkpointing (session memory)
+    memory = SqliteSaver.from_conn_string("checkpoints.db")
+    return graph.compile(checkpointer=memory,
+                         interrupt_before=["human_handoff"])`
+
+---
+
+## 🗺️ Build Order (Recommended Sequence)
+
+| Week | What to Build | Output |
+| --- | --- | --- |
+| 1 | Config + LLM Factory + DB Factory + State | Running skeleton |
+| 2 | Glue connector + Pinecone connector + Discovery Council | Tables discovered from query |
+| 3 | Schema Retriever + Query Planner | Structured plan from NL |
+| 4 | SQL Generator + Athena Executor | SQL running end to end |
+| 5 | Error Classifier + SQL Fixer + Retry Loop | Self-healing queries |
+| 6 | Validation Council (all 4 layers) | Governed output |
+| 7 | Metrics KB + Approval flow | Business accuracy |
+| 8 | Memory (all 3 layers) | Learning system |
+| 9 | Summarizer + Supervisor + Human Handoff | Full pipeline |
+| 10 | Evaluation framework + LangSmith tracing | Measurable accuracy |
+
+---
+
+## 📏 Evaluation Framework (How You Measure Quality)
+
+python
+
+`metrics = {
+    "discovery_accuracy":    "% correct tables identified",
+    "sql_correctness":       "% queries returning expected result",
+    "retry_rate":            "avg retries per query (lower = better)",
+    "validation_pass_rate":  "% passing council without retry",
+    "summary_faithfulness":  "LLM judge: does summary match data?",
+    "end_to_end_latency":    "seconds from query → answer",
+    "human_escalation_rate": "% queries needing human (lower = better)"
+}`
+
+---
+
+## ✅ What To Do Right Now
+
+Start with this order — each step is independently testable:
+
+1. `config/config.yaml` + `.env` skeleton
+2. `llm/llm_factory.py` — test with a simple prompt
+3. `db/db_factory.py` + `athena_executor.py` — test with a raw SQL
+4. `graph/state.py` — define state TypedDict
+5. `agents/discovery/glue_connector.py` — test table search
+6. `agents/discovery/pinecone_connector.py` — ingest schema metadata, test search
+7. Wire up LangGraph skeleton with all nodes as stubs
+8. Fill in agents one by one
