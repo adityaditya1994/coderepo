@@ -1,0 +1,165 @@
+[
+  {
+    "name": "orders",
+    "database": "ecommerce_analytics",
+    "description": "Fact table containing all customer orders. Each row represents a single order placed by a customer. This is the primary revenue table.",
+    "tags": ["orders", "revenue", "sales", "transactions", "fact"],
+    "columns": [
+      {"name": "order_id", "type": "bigint", "description": "Unique order identifier"},
+      {"name": "customer_id", "type": "bigint", "description": "FK to customers table"},
+      {"name": "order_date", "type": "date", "description": "Date the order was placed"},
+      {"name": "status", "type": "varchar", "description": "Order status: pending, completed, cancelled, refunded"},
+      {"name": "total_amount", "type": "double", "description": "Total order amount in USD"},
+      {"name": "discount_amount", "type": "double", "description": "Discount applied to the order"},
+      {"name": "shipping_cost", "type": "double", "description": "Shipping charges"},
+      {"name": "payment_method", "type": "varchar", "description": "Payment method: credit_card, paypal, bank_transfer"},
+      {"name": "channel", "type": "varchar", "description": "Sales channel: web, mobile_app, in_store"},
+      {"name": "region_id", "type": "int", "description": "FK to regions table"},
+      {"name": "created_at", "type": "timestamp", "description": "Record creation timestamp"},
+      {"name": "updated_at", "type": "timestamp", "description": "Record last update timestamp"}
+    ]
+  },
+  {
+    "name": "order_items",
+    "database": "ecommerce_analytics",
+    "description": "Line-item detail for each order. Each row is a single product in an order. Joins to orders via order_id and products via product_id.",
+    "tags": ["order_items", "line_items", "revenue", "quantity", "detail"],
+    "columns": [
+      {"name": "item_id", "type": "bigint", "description": "Unique line item identifier"},
+      {"name": "order_id", "type": "bigint", "description": "FK to orders table"},
+      {"name": "product_id", "type": "bigint", "description": "FK to products table"},
+      {"name": "quantity", "type": "int", "description": "Number of units ordered"},
+      {"name": "unit_price", "type": "double", "description": "Price per unit at time of order"},
+      {"name": "line_total", "type": "double", "description": "quantity * unit_price"},
+      {"name": "discount_pct", "type": "double", "description": "Discount percentage applied to this line"}
+    ]
+  },
+  {
+    "name": "customers",
+    "database": "ecommerce_analytics",
+    "description": "Customer master data. Contains demographics, signup info, and customer segmentation. Joins to orders via customer_id.",
+    "tags": ["customers", "users", "demographics", "dimension", "master"],
+    "columns": [
+      {"name": "customer_id", "type": "bigint", "description": "Unique customer identifier"},
+      {"name": "name", "type": "varchar", "description": "Full name of customer"},
+      {"name": "email", "type": "varchar", "description": "Customer email address"},
+      {"name": "signup_date", "type": "date", "description": "Date customer registered"},
+      {"name": "segment", "type": "varchar", "description": "Customer segment: enterprise, mid_market, smb, individual"},
+      {"name": "lifetime_value", "type": "double", "description": "Calculated lifetime value in USD"},
+      {"name": "region_id", "type": "int", "description": "FK to regions table"},
+      {"name": "is_active", "type": "boolean", "description": "Whether the customer is currently active"}
+    ]
+  },
+  {
+    "name": "products",
+    "database": "ecommerce_analytics",
+    "description": "Product catalog. Contains product details, categories, and pricing. Joins to order_items via product_id.",
+    "tags": ["products", "catalog", "inventory", "dimension", "sku"],
+    "columns": [
+      {"name": "product_id", "type": "bigint", "description": "Unique product identifier"},
+      {"name": "product_name", "type": "varchar", "description": "Product display name"},
+      {"name": "category", "type": "varchar", "description": "Product category: electronics, clothing, home, food, sports"},
+      {"name": "subcategory", "type": "varchar", "description": "Product subcategory"},
+      {"name": "brand", "type": "varchar", "description": "Brand name"},
+      {"name": "current_price", "type": "double", "description": "Current retail price in USD"},
+      {"name": "cost_price", "type": "double", "description": "Cost to the company"},
+      {"name": "is_active", "type": "boolean", "description": "Whether the product is currently listed"},
+      {"name": "launch_date", "type": "date", "description": "Product launch date"}
+    ]
+  },
+  {
+    "name": "regions",
+    "database": "ecommerce_analytics",
+    "description": "Geographic region dimension table. Maps region_id to region names and countries.",
+    "tags": ["regions", "geography", "location", "dimension"],
+    "columns": [
+      {"name": "region_id", "type": "int", "description": "Unique region identifier"},
+      {"name": "region_name", "type": "varchar", "description": "Region name: North America, EMEA, APAC, LATAM"},
+      {"name": "country", "type": "varchar", "description": "Country name"},
+      {"name": "state_province", "type": "varchar", "description": "State or province"},
+      {"name": "timezone", "type": "varchar", "description": "Primary timezone"}
+    ]
+  },
+  {
+    "name": "inventory",
+    "database": "ecommerce_analytics",
+    "description": "Current inventory levels by product and warehouse. Updated daily. Used for stock monitoring and supply chain analytics.",
+    "tags": ["inventory", "stock", "warehouse", "supply_chain"],
+    "columns": [
+      {"name": "product_id", "type": "bigint", "description": "FK to products table"},
+      {"name": "warehouse_id", "type": "int", "description": "Warehouse identifier"},
+      {"name": "quantity_on_hand", "type": "int", "description": "Current stock quantity"},
+      {"name": "reorder_point", "type": "int", "description": "Minimum stock before reorder"},
+      {"name": "last_restock_date", "type": "date", "description": "Last restock date"},
+      {"name": "snapshot_date", "type": "date", "description": "Date of this inventory snapshot"}
+    ]
+  },
+  {
+    "name": "returns",
+    "database": "ecommerce_analytics",
+    "description": "Product return records. Each row is a returned item. Joins to orders via order_id and products via product_id.",
+    "tags": ["returns", "refunds", "quality", "customer_satisfaction"],
+    "columns": [
+      {"name": "return_id", "type": "bigint", "description": "Unique return identifier"},
+      {"name": "order_id", "type": "bigint", "description": "FK to original order"},
+      {"name": "product_id", "type": "bigint", "description": "FK to returned product"},
+      {"name": "return_date", "type": "date", "description": "Date of return"},
+      {"name": "reason", "type": "varchar", "description": "Return reason: defective, wrong_item, not_as_described, changed_mind"},
+      {"name": "refund_amount", "type": "double", "description": "Amount refunded to customer"},
+      {"name": "status", "type": "varchar", "description": "Return status: pending, approved, rejected, processed"}
+    ]
+  },
+  {
+    "name": "web_sessions",
+    "database": "ecommerce_analytics",
+    "description": "Web and app session data. Tracks user visits, page views, and session duration for traffic and conversion analytics.",
+    "tags": ["sessions", "traffic", "web", "engagement", "conversion"],
+    "columns": [
+      {"name": "session_id", "type": "varchar", "description": "Unique session identifier"},
+      {"name": "customer_id", "type": "bigint", "description": "FK to customers (null for anonymous)"},
+      {"name": "session_start", "type": "timestamp", "description": "Session start time"},
+      {"name": "session_end", "type": "timestamp", "description": "Session end time"},
+      {"name": "page_views", "type": "int", "description": "Number of pages viewed"},
+      {"name": "device_type", "type": "varchar", "description": "Device: desktop, mobile, tablet"},
+      {"name": "referral_source", "type": "varchar", "description": "Traffic source: organic, paid, social, email, direct"},
+      {"name": "did_purchase", "type": "boolean", "description": "Whether session resulted in a purchase"},
+      {"name": "session_date", "type": "date", "description": "Date of session"}
+    ]
+  },
+  {
+    "name": "marketing_campaigns",
+    "database": "ecommerce_analytics",
+    "description": "Marketing campaign performance. Tracks spend, impressions, clicks, and conversions per campaign per day.",
+    "tags": ["marketing", "campaigns", "advertising", "spend", "roi"],
+    "columns": [
+      {"name": "campaign_id", "type": "int", "description": "Unique campaign identifier"},
+      {"name": "campaign_name", "type": "varchar", "description": "Campaign display name"},
+      {"name": "channel", "type": "varchar", "description": "Marketing channel: google_ads, facebook, instagram, email, sms"},
+      {"name": "spend", "type": "double", "description": "Daily spend in USD"},
+      {"name": "impressions", "type": "bigint", "description": "Number of impressions"},
+      {"name": "clicks", "type": "bigint", "description": "Number of clicks"},
+      {"name": "conversions", "type": "int", "description": "Number of conversions (purchases)"},
+      {"name": "revenue_attributed", "type": "double", "description": "Revenue attributed to this campaign"},
+      {"name": "date", "type": "date", "description": "Date of metrics"},
+      {"name": "region_id", "type": "int", "description": "FK to regions table"}
+    ]
+  },
+  {
+    "name": "customer_support_tickets",
+    "database": "ecommerce_analytics",
+    "description": "Customer support ticket records. Tracks issues, resolution times, and satisfaction scores for customer service analytics.",
+    "tags": ["support", "tickets", "customer_service", "satisfaction", "sla"],
+    "columns": [
+      {"name": "ticket_id", "type": "bigint", "description": "Unique ticket identifier"},
+      {"name": "customer_id", "type": "bigint", "description": "FK to customers table"},
+      {"name": "order_id", "type": "bigint", "description": "FK to related order (nullable)"},
+      {"name": "category", "type": "varchar", "description": "Issue category: billing, shipping, product, account, other"},
+      {"name": "priority", "type": "varchar", "description": "Priority: low, medium, high, critical"},
+      {"name": "status", "type": "varchar", "description": "Ticket status: open, in_progress, resolved, closed"},
+      {"name": "created_at", "type": "timestamp", "description": "Ticket creation timestamp"},
+      {"name": "resolved_at", "type": "timestamp", "description": "Ticket resolution timestamp (nullable)"},
+      {"name": "satisfaction_score", "type": "int", "description": "Customer satisfaction 1-5 (nullable)"},
+      {"name": "agent_id", "type": "int", "description": "Support agent who handled the ticket"}
+    ]
+  }
+]
