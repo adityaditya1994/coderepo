@@ -44,3 +44,8 @@ class AgentState(TypedDict):
 
     # ── Errors / Trace ──
     error_log: List[str]
+
+    # ── Observability (v2) ──
+    trace: List[dict]                    # [{agent, duration_ms, trace_id, output_keys}]
+    agent_mermaid: str                   # cumulative mermaid diagram of execution path
+

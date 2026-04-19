@@ -107,5 +107,7 @@ def get_app_state():
 
 # ── Register routes ──
 from api.routes import router  # noqa: E402
+from api.agent_routes import router as agent_router  # noqa: E402
 
 app.include_router(router)
+app.include_router(agent_router)

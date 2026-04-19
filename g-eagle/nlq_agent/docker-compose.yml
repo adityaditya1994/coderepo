@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nlq_postgres
+    environment:
+      POSTGRES_USER: nlq_user
+      POSTGRES_PASSWORD: nlq_pass
+      POSTGRES_DB: nlq_demo
+    ports:
+      - "5432:5432"
+    volumes:
+      - nlq_pgdata:/var/lib/postgresql/data
+      - ./db/seed/init.sql:/docker-entrypoint-initdb.d/01_init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nlq_user -d nlq_demo"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  nlq_pgdata:

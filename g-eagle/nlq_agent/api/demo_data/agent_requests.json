@@ -1,0 +1,121 @@
+{
+  "discovery": {
+    "description": "Run discovery agent to find relevant tables",
+    "state": {
+      "user_query": "What is the total revenue by region for Q1 2024?",
+      "session_id": "test-001"
+    }
+  },
+  "schema_retriever": {
+    "description": "Fetch column-level schema for discovered tables",
+    "state": {
+      "discovered_tables": [
+        {"name": "orders", "database": "ecommerce_analytics", "columns": [
+          {"name": "order_id", "type": "bigint"},
+          {"name": "customer_id", "type": "bigint"},
+          {"name": "order_date", "type": "date"},
+          {"name": "total_amount", "type": "double"},
+          {"name": "region_id", "type": "int"},
+          {"name": "status", "type": "varchar"}
+        ]},
+        {"name": "regions", "database": "ecommerce_analytics", "columns": [
+          {"name": "region_id", "type": "int"},
+          {"name": "region_name", "type": "varchar"},
+          {"name": "country", "type": "varchar"}
+        ]}
+      ]
+    }
+  },
+  "query_planner": {
+    "description": "Create a structured query plan from schema and user query",
+    "state": {
+      "user_query": "What is the total revenue by region for Q1 2024?",
+      "schema": {
+        "orders": [
+          {"name": "order_id", "type": "bigint"},
+          {"name": "order_date", "type": "date"},
+          {"name": "total_amount", "type": "double"},
+          {"name": "region_id", "type": "int"},
+          {"name": "status", "type": "varchar"}
+        ],
+        "regions": [
+          {"name": "region_id", "type": "int"},
+          {"name": "region_name", "type": "varchar"}
+        ]
+      },
+      "selected_tables": ["orders", "regions"],
+      "memory_context": {}
+    }
+  },
+  "sql_generator": {
+    "description": "Generate SQL from a query plan",
+    "state": {
+      "user_query": "What is the total revenue by region for Q1 2024?",
+      "schema": {
+        "orders": [
+          {"name": "order_id", "type": "bigint"},
+          {"name": "order_date", "type": "date"},
+          {"name": "total_amount", "type": "double"},
+          {"name": "region_id", "type": "int"},
+          {"name": "status", "type": "varchar"}
+        ],
+        "regions": [
+          {"name": "region_id", "type": "int"},
+          {"name": "region_name", "type": "varchar"}
+        ]
+      },
+      "selected_tables": ["orders", "regions"],
+      "query_plan": {
+        "objective": "Calculate total revenue grouped by region for Q1 2024",
+        "tables": ["orders", "regions"],
+        "joins": [{"left": "orders.region_id", "right": "regions.region_id", "type": "INNER"}],
+        "filters": [{"column": "order_date", "op": "BETWEEN", "value": "2024-01-01 AND 2024-03-31"}, {"column": "status", "op": "=", "value": "completed"}],
+        "aggregations": [{"function": "SUM", "column": "total_amount", "alias": "total_revenue"}],
+        "group_by": ["regions.region_name"],
+        "order_by": [{"column": "total_revenue", "direction": "DESC"}]
+      },
+      "memory_context": {},
+      "sql_history": []
+    }
+  },
+  "executor": {
+    "description": "Execute SQL against the configured database",
+    "state": {
+      "sql": "SELECT r.region_name, SUM(o.total_amount) AS total_revenue FROM orders o JOIN regions r ON o.region_id = r.region_id WHERE o.order_date BETWEEN '2024-01-01' AND '2024-03-31' AND o.status = 'completed' GROUP BY r.region_name ORDER BY total_revenue DESC",
+      "retry_count": 0
+    }
+  },
+  "validator": {
+    "description": "Run 4-validator council on SQL + results",
+    "state": {
+      "user_query": "What is the total revenue by region for Q1 2024?",
+      "sql": "SELECT r.region_name, SUM(o.total_amount) AS total_revenue FROM orders o JOIN regions r ON o.region_id = r.region_id WHERE o.order_date BETWEEN '2024-01-01' AND '2024-03-31' AND o.status = 'completed' GROUP BY r.region_name ORDER BY total_revenue DESC",
+      "schema": {
+        "orders": [{"name": "order_id", "type": "bigint"}, {"name": "order_date", "type": "date"}, {"name": "total_amount", "type": "double"}, {"name": "region_id", "type": "int"}, {"name": "status", "type": "varchar"}],
+        "regions": [{"name": "region_id", "type": "int"}, {"name": "region_name", "type": "varchar"}]
+      },
+      "query_plan": {"objective": "Total revenue by region Q1 2024"},
+      "execution_result": {
+        "columns": ["region_name", "total_revenue"],
+        "rows": [["APAC", 3549.96], ["North America", 1919.92], ["EMEA", 289.98], ["LATAM", 63.98]],
+        "row_count": 4
+      },
+      "memory_context": {}
+    }
+  },
+  "summarizer": {
+    "description": "Generate natural language summary of results",
+    "state": {
+      "user_query": "What is the total revenue by region for Q1 2024?",
+      "sql": "SELECT r.region_name, SUM(o.total_amount) AS total_revenue FROM orders o JOIN regions r ON o.region_id = r.region_id WHERE o.order_date BETWEEN '2024-01-01' AND '2024-03-31' AND o.status = 'completed' GROUP BY r.region_name ORDER BY total_revenue DESC",
+      "execution_result": {
+        "columns": ["region_name", "total_revenue"],
+        "rows": [["APAC", 3549.96], ["North America", 1919.92], ["EMEA", 289.98], ["LATAM", 63.98]],
+        "row_count": 4
+      },
+      "validation_result": {"overall_valid": true, "confidence": 0.95, "recommendation": "proceed"},
+      "confidence_score": 0.95,
+      "memory_context": {}
+    }
+  }
+}

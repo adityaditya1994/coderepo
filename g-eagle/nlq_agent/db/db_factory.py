@@ -4,6 +4,7 @@ based on the configured database provider.
 """
 
 from agents.executor.athena_executor import AthenaExecutor
+from agents.executor.postgres_executor import PostgresExecutor
 
 
 def get_executor(config: dict):
@@ -24,12 +25,8 @@ def get_executor(config: dict):
 
     if provider == "athena":
         return AthenaExecutor(config["database"]["athena"])
-    # ── Extend here ──
-    # elif provider == "snowflake":
-    #     return SnowflakeExecutor(config["database"]["snowflake"])
-    # elif provider == "postgres":
-    #     return PostgresExecutor(config["database"]["postgres"])
-    # elif provider == "bigquery":
-    #     return BigQueryExecutor(config["database"]["bigquery"])
+    elif provider == "local_postgres":
+        return PostgresExecutor(config["database"]["local_postgres"])
     else:
         raise ValueError(f"Unsupported database provider: {provider}")
+

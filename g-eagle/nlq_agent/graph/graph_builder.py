@@ -1,8 +1,13 @@
 """
 Graph Builder — assembles the full LangGraph StateGraph
 with all nodes, edges, conditional edges, and checkpointing.
+
+All node wrappers include trace instrumentation for structured
+logging and mermaid diagram generation (see graph/trace.py).
+Topology is unchanged from the original design.
 """
 
+import logging
 from functools import partial
 
 from langgraph.graph import StateGraph, END
@@ -10,6 +15,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from graph.state import AgentState
 from graph.edges import should_retry, after_validation
+from graph.trace import trace_start, trace_end, new_trace_id
 
 from agents.supervisor import supervisor_node
 from agents.discovery.discovery_agent import DiscoveryAgent
@@ -25,6 +31,8 @@ from memory.memory_manager import MemoryManager, memory_writer_node
 
 from llm.llm_factory import get_llm
 from knowledge_base.metrics_store import MetricsStore
+
+logger = logging.getLogger("discovery-api")
 
 
 def build_graph(config: dict):
@@ -45,53 +53,72 @@ def build_graph(config: dict):
     memory_mgr = MemoryManager(config)
     metrics_store = MetricsStore()
 
-    # ── Wrap node functions with config/llm dependencies ──
+    # ── Wrap node functions with config/llm + trace instrumentation ──
 
     def _supervisor(state: AgentState) -> dict:
-        return supervisor_node(state, config, llm)
+        t0 = trace_start("supervisor", state)
+        result = supervisor_node(state, config, llm)
+        return trace_end(state, "supervisor", result, t0)
 
     def _discovery(state: AgentState) -> dict:
+        t0 = trace_start("discovery", state)
         agent = DiscoveryAgent(config, llm)
         tables = agent.discover(state["user_query"])
-
-        # Build memory context and attach
         ctx = memory_mgr.retrieve_context(
             state["user_query"], state.get("session_id", "")
         )
-
-        return {
+        result = {
             "discovered_tables": tables,
             "memory_context": ctx,
         }
+        return trace_end(state, "discovery", result, t0)
 
     def _schema_retriever(state: AgentState) -> dict:
-        return schema_retriever_node(state, config)
+        t0 = trace_start("schema_retriever", state)
+        result = schema_retriever_node(state, config)
+        return trace_end(state, "schema_retriever", result, t0)
 
     def _query_planner(state: AgentState) -> dict:
-        return query_planner_node(state, config, llm)
+        t0 = trace_start("query_planner", state)
+        result = query_planner_node(state, config, llm)
+        return trace_end(state, "query_planner", result, t0)
 
     def _sql_generator(state: AgentState) -> dict:
-        return sql_generator_node(state, config, llm)
+        t0 = trace_start("sql_generator", state)
+        result = sql_generator_node(state, config, llm)
+        return trace_end(state, "sql_generator", result, t0)
 
     def _executor(state: AgentState) -> dict:
-        return executor_node(state, config)
+        t0 = trace_start("executor", state)
+        result = executor_node(state, config)
+        return trace_end(state, "executor", result, t0)
 
     def _sql_fixer(state: AgentState) -> dict:
-        return sql_fixer_node(state, config, llm)
+        t0 = trace_start("sql_fixer", state)
+        result = sql_fixer_node(state, config, llm)
+        return trace_end(state, "sql_fixer", result, t0)
 
     def _validator(state: AgentState) -> dict:
-        return validation_council_node(state, config, llm)
+        t0 = trace_start("validator", state)
+        result = validation_council_node(state, config, llm)
+        return trace_end(state, "validator", result, t0)
 
     def _summarizer(state: AgentState) -> dict:
-        return summarizer_node(state, config, llm)
+        t0 = trace_start("summarizer", state)
+        result = summarizer_node(state, config, llm)
+        return trace_end(state, "summarizer", result, t0)
 
     def _human_handoff(state: AgentState) -> dict:
-        return human_handoff_node(state, config)
+        t0 = trace_start("human_handoff", state)
+        result = human_handoff_node(state, config)
+        return trace_end(state, "human_handoff", result, t0)
 
     def _memory_writer(state: AgentState) -> dict:
-        return memory_writer_node(state, config)
+        t0 = trace_start("memory_writer", state)
+        result = memory_writer_node(state, config)
+        return trace_end(state, "memory_writer", result, t0)
 
-    # ── Build the graph ──
+    # ── Build the graph (topology unchanged) ──
     graph = StateGraph(AgentState)
 
     # Add nodes
@@ -144,3 +171,4 @@ def build_graph(config: dict):
         checkpointer=memory,
         interrupt_before=["human_handoff"],
     )
+

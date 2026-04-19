@@ -1,14 +1,21 @@
 llm:
-  provider: openai          # openai | anthropic | gemini
-  model: gpt-4o
+  provider: ollama            # openai | anthropic | gemini | ollama
+  model: gemma4:latest
   temperature: 0.0
+  base_url: http://localhost:11434   # only used by ollama
 
 database:
-  provider: athena          # athena | snowflake | postgres | bigquery
+  provider: local_postgres    # athena | local_postgres
   athena:
     region: us-east-1
     s3_output: s3://your-bucket/athena-results/
     database: your_db
+  local_postgres:
+    host: localhost
+    port: 5432
+    database: nlq_demo
+    user: nlq_user
+    password: nlq_pass
 
 discovery:
   sources:
