@@ -1,0 +1,19 @@
+{
+  "description": "Format state for human review when confidence is too low",
+  "state": {
+    "user_query": "What is the total revenue by region for Q1 2024?",
+    "sql": "SELECT region_name, SUM(total_amount) FROM orders GROUP BY region_name",
+    "sql_history": [
+      "SELECT region_name, SUM(total_amunt) FROM orders GROUP BY region_name",
+      "SELECT region_name, SUM(total_amount) FROM orders GROUP BY region_name"
+    ],
+    "execution_error": "column \"region_name\" does not exist",
+    "retry_count": 3,
+    "validation_result": {},
+    "error_log": [
+      "Error: COLUMN_NOT_FOUND — total_amunt — Fix: use total_amount",
+      "Error: COLUMN_NOT_FOUND — region_name — Fix: join with regions table"
+    ],
+    "confidence_score": 0.2
+  }
+}

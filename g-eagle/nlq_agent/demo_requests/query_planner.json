@@ -1,0 +1,21 @@
+{
+  "description": "Create a structured query plan from schema and user query",
+  "state": {
+    "user_query": "What is the total revenue by region for Q1 2024?",
+    "schema": {
+      "orders": [
+        {"name": "order_id", "type": "bigint"},
+        {"name": "order_date", "type": "date"},
+        {"name": "total_amount", "type": "double"},
+        {"name": "region_id", "type": "int"},
+        {"name": "status", "type": "varchar"}
+      ],
+      "regions": [
+        {"name": "region_id", "type": "int"},
+        {"name": "region_name", "type": "varchar"}
+      ]
+    },
+    "selected_tables": ["orders", "regions"],
+    "memory_context": {}
+  }
+}

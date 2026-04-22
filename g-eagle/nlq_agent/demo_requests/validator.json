@@ -1,0 +1,29 @@
+{
+  "description": "Run 4-validator council on SQL + results",
+  "state": {
+    "user_query": "What is the total revenue by region for Q1 2024?",
+    "sql": "SELECT r.region_name, SUM(o.total_amount) AS total_revenue FROM orders o JOIN regions r ON o.region_id = r.region_id WHERE o.order_date BETWEEN '2024-01-01' AND '2024-03-31' AND o.status = 'completed' GROUP BY r.region_name ORDER BY total_revenue DESC",
+    "schema": {
+      "orders": [
+        {"name": "order_id", "type": "bigint"},
+        {"name": "order_date", "type": "date"},
+        {"name": "total_amount", "type": "double"},
+        {"name": "region_id", "type": "int"},
+        {"name": "status", "type": "varchar"}
+      ],
+      "regions": [
+        {"name": "region_id", "type": "int"},
+        {"name": "region_name", "type": "varchar"}
+      ]
+    },
+    "query_plan": {
+      "objective": "Total revenue by region Q1 2024"
+    },
+    "execution_result": {
+      "columns": ["region_name", "total_revenue"],
+      "rows": [["APAC", 3549.96], ["North America", 1919.92], ["EMEA", 289.98], ["LATAM", 63.98]],
+      "row_count": 4
+    },
+    "memory_context": {}
+  }
+}

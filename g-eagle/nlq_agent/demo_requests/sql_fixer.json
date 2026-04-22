@@ -1,0 +1,17 @@
+{
+  "description": "Classify error and generate corrected SQL",
+  "state": {
+    "sql": "SELECT region_name, SUM(total_amunt) FROM orders GROUP BY region_name",
+    "execution_error": "column \"total_amunt\" does not exist",
+    "schema": {
+      "orders": [
+        {"name": "order_id", "type": "bigint"},
+        {"name": "total_amount", "type": "double"},
+        {"name": "region_id", "type": "int"}
+      ]
+    },
+    "sql_history": [
+      "SELECT region_name, SUM(total_amunt) FROM orders GROUP BY region_name"
+    ]
+  }
+}

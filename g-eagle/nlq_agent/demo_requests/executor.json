@@ -1,0 +1,7 @@
+{
+  "description": "Execute SQL against the configured database",
+  "state": {
+    "sql": "SELECT r.region_name, SUM(o.total_amount) AS total_revenue FROM orders o JOIN regions r ON o.region_id = r.region_id WHERE o.order_date BETWEEN '2024-01-01' AND '2024-03-31' AND o.status = 'completed' GROUP BY r.region_name ORDER BY total_revenue DESC",
+    "retry_count": 0
+  }
+}

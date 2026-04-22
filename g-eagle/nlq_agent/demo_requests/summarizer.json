@@ -1,0 +1,19 @@
+{
+  "description": "Generate natural language summary of results",
+  "state": {
+    "user_query": "What is the total revenue by region for Q1 2024?",
+    "sql": "SELECT r.region_name, SUM(o.total_amount) AS total_revenue FROM orders o JOIN regions r ON o.region_id = r.region_id WHERE o.order_date BETWEEN '2024-01-01' AND '2024-03-31' AND o.status = 'completed' GROUP BY r.region_name ORDER BY total_revenue DESC",
+    "execution_result": {
+      "columns": ["region_name", "total_revenue"],
+      "rows": [["APAC", 3549.96], ["North America", 1919.92], ["EMEA", 289.98], ["LATAM", 63.98]],
+      "row_count": 4
+    },
+    "validation_result": {
+      "overall_valid": true,
+      "confidence": 0.95,
+      "recommendation": "proceed"
+    },
+    "confidence_score": 0.95,
+    "memory_context": {}
+  }
+}

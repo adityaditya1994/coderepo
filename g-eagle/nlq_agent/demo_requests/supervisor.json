@@ -1,0 +1,7 @@
+{
+  "description": "Invoke the supervisor agent (first pass — no SQL yet)",
+  "state": {
+    "user_query": "What is the total revenue by region for Q1 2024?",
+    "session_id": "demo-001"
+  }
+}

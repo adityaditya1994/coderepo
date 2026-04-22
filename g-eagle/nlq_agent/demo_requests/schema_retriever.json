@@ -1,0 +1,28 @@
+{
+  "description": "Fetch column-level schema for discovered tables",
+  "state": {
+    "discovered_tables": [
+      {
+        "name": "orders",
+        "database": "ecommerce_analytics",
+        "columns": [
+          {"name": "order_id", "type": "bigint"},
+          {"name": "customer_id", "type": "bigint"},
+          {"name": "order_date", "type": "date"},
+          {"name": "total_amount", "type": "double"},
+          {"name": "region_id", "type": "int"},
+          {"name": "status", "type": "varchar"}
+        ]
+      },
+      {
+        "name": "regions",
+        "database": "ecommerce_analytics",
+        "columns": [
+          {"name": "region_id", "type": "int"},
+          {"name": "region_name", "type": "varchar"},
+          {"name": "country", "type": "varchar"}
+        ]
+      }
+    ]
+  }
+}

@@ -19,6 +19,104 @@ logger = logging.getLogger("discovery-api")
 router = APIRouter(prefix="/agents", tags=["Agent Testing"])
 
 
+# ── OpenAPI examples per agent ──
+
+AGENT_EXAMPLES = {
+    "discovery": {
+        "summary": "Discovery — find tables for a revenue query",
+        "value": {
+            "state": {
+                "user_query": "What is the total revenue by region for Q1 2024?",
+                "session_id": "demo-001",
+            }
+        },
+    },
+    "schema_retriever": {
+        "summary": "Schema Retriever — fetch columns for discovered tables",
+        "value": {
+            "state": {
+                "discovered_tables": [
+                    {"name": "orders", "database": "ecommerce_analytics", "columns": [
+                        {"name": "order_id", "type": "bigint"},
+                        {"name": "total_amount", "type": "double"},
+                        {"name": "region_id", "type": "int"},
+                    ]},
+                    {"name": "regions", "database": "ecommerce_analytics", "columns": [
+                        {"name": "region_id", "type": "int"},
+                        {"name": "region_name", "type": "varchar"},
+                    ]},
+                ]
+            }
+        },
+    },
+    "query_planner": {
+        "summary": "Query Planner — create structured plan from schema",
+        "value": {
+            "state": {
+                "user_query": "What is the total revenue by region for Q1 2024?",
+                "schema": {
+                    "orders": [{"name": "order_id", "type": "bigint"}, {"name": "total_amount", "type": "double"}, {"name": "region_id", "type": "int"}],
+                    "regions": [{"name": "region_id", "type": "int"}, {"name": "region_name", "type": "varchar"}],
+                },
+                "selected_tables": ["orders", "regions"],
+                "memory_context": {},
+            }
+        },
+    },
+    "sql_generator": {
+        "summary": "SQL Generator — generate SQL from a query plan",
+        "value": {
+            "state": {
+                "user_query": "What is the total revenue by region for Q1 2024?",
+                "schema": {
+                    "orders": [{"name": "total_amount", "type": "double"}, {"name": "region_id", "type": "int"}],
+                    "regions": [{"name": "region_id", "type": "int"}, {"name": "region_name", "type": "varchar"}],
+                },
+                "selected_tables": ["orders", "regions"],
+                "query_plan": {"objective": "Total revenue by region Q1 2024", "tables": ["orders", "regions"]},
+                "memory_context": {},
+                "sql_history": [],
+            }
+        },
+    },
+    "executor": {
+        "summary": "Executor — run SQL against the database",
+        "value": {
+            "state": {
+                "sql": "SELECT r.region_name, SUM(o.total_amount) AS total_revenue FROM orders o JOIN regions r ON o.region_id = r.region_id GROUP BY r.region_name",
+                "retry_count": 0,
+            }
+        },
+    },
+    "validator": {
+        "summary": "Validator — run 4-validator council on results",
+        "value": {
+            "state": {
+                "user_query": "What is the total revenue by region?",
+                "sql": "SELECT r.region_name, SUM(o.total_amount) AS total_revenue FROM orders o JOIN regions r ON o.region_id = r.region_id GROUP BY r.region_name",
+                "schema": {"orders": [{"name": "total_amount", "type": "double"}, {"name": "region_id", "type": "int"}], "regions": [{"name": "region_id", "type": "int"}, {"name": "region_name", "type": "varchar"}]},
+                "query_plan": {"objective": "Total revenue by region"},
+                "execution_result": {"columns": ["region_name", "total_revenue"], "rows": [["APAC", 3549.96]], "row_count": 1},
+                "memory_context": {},
+            }
+        },
+    },
+    "summarizer": {
+        "summary": "Summarizer — generate business narrative",
+        "value": {
+            "state": {
+                "user_query": "What is the total revenue by region?",
+                "sql": "SELECT r.region_name, SUM(o.total_amount) AS total_revenue FROM orders o JOIN regions r ON o.region_id = r.region_id GROUP BY r.region_name",
+                "execution_result": {"columns": ["region_name", "total_revenue"], "rows": [["APAC", 3549.96], ["North America", 1919.92]], "row_count": 2},
+                "validation_result": {"overall_valid": True, "confidence": 0.95, "recommendation": "proceed"},
+                "confidence_score": 0.95,
+                "memory_context": {},
+            }
+        },
+    },
+}
+
+
 # ── Request / Response models ──
 
 class AgentInvokeRequest(BaseModel):
@@ -26,6 +124,12 @@ class AgentInvokeRequest(BaseModel):
     state: dict = Field(
         ..., description="Partial AgentState dict — only fields the agent reads"
     )
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [ex["value"] for ex in AGENT_EXAMPLES.values()],
+        }
+    }
 
 
 class AgentInvokeResponse(BaseModel):
@@ -108,7 +212,17 @@ SUPPORTED_AGENTS = [
     "/{agent_name}/invoke",
     response_model=AgentInvokeResponse,
     summary="Invoke a single agent",
-    description=f"Supported agents: {', '.join(SUPPORTED_AGENTS)}",
+    description=f"Supported agents: {', '.join(SUPPORTED_AGENTS)}. "
+                "See demo_requests/ folder for sample JSON per agent.",
+    openapi_extra={
+        "requestBody": {
+            "content": {
+                "application/json": {
+                    "examples": AGENT_EXAMPLES,
+                }
+            }
+        }
+    },
 )
 async def invoke_agent(agent_name: str, request: AgentInvokeRequest):
     """

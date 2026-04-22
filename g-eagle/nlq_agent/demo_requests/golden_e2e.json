@@ -1,0 +1,30 @@
+{
+  "description": "Golden E2E questions for testing the full pipeline against seeded Postgres",
+  "questions": [
+    {
+      "query": "What is the total revenue by region for Q1 2024?",
+      "expected_tables": ["orders", "regions"],
+      "expected_sql_contains": ["SUM", "total_amount", "region", "2024"]
+    },
+    {
+      "query": "Who are the top 5 customers by lifetime value?",
+      "expected_tables": ["customers"],
+      "expected_sql_contains": ["lifetime_value", "ORDER BY", "LIMIT"]
+    },
+    {
+      "query": "What are the best-selling products by total quantity sold?",
+      "expected_tables": ["order_items", "products"],
+      "expected_sql_contains": ["SUM", "quantity", "product_name"]
+    },
+    {
+      "query": "How many orders were placed per sales channel in 2024?",
+      "expected_tables": ["orders"],
+      "expected_sql_contains": ["COUNT", "channel", "2024", "GROUP BY"]
+    },
+    {
+      "query": "What is the average order value by customer segment?",
+      "expected_tables": ["orders", "customers"],
+      "expected_sql_contains": ["AVG", "total_amount", "segment"]
+    }
+  ]
+}

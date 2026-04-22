@@ -55,7 +55,7 @@ class TestConfigLoader(unittest.TestCase):
         config = load_config()
         self.assertIsInstance(config, dict)
         self.assertIn("llm", config)
-        self.assertEqual(config["llm"]["provider"], "openai")
+        self.assertEqual(config["llm"]["provider"], "ollama")
 
     def test_config_has_retry_max_attempts(self):
         from config.config_loader import load_config
@@ -753,15 +753,12 @@ class TestGraphCompilation(unittest.TestCase):
             config = load_config()
 
             original_get_llm = gb.get_llm
-            original_memory = gb.MemorySaver
             try:
                 gb.get_llm = lambda cfg: MagicMock()
-                gb.MemorySaver = MagicMock
                 graph = gb.build_graph(config)
                 self.assertIsNotNone(graph)
             finally:
                 gb.get_llm = original_get_llm
-                gb.MemorySaver = original_memory
         except ImportError as e:
             self.skipTest(f"langgraph not available: {e}")
 
@@ -772,10 +769,8 @@ class TestGraphCompilation(unittest.TestCase):
             config = load_config()
 
             original_get_llm = gb.get_llm
-            original_memory = gb.MemorySaver
             try:
                 gb.get_llm = lambda cfg: MagicMock()
-                gb.MemorySaver = MagicMock
                 graph = gb.build_graph(config)
 
                 expected_nodes = [
@@ -785,7 +780,9 @@ class TestGraphCompilation(unittest.TestCase):
                     "human_handoff", "memory_writer",
                 ]
                 graph_obj = graph.get_graph()
-                node_ids = [n.id for n in graph_obj.nodes]
+                nodes = graph_obj.nodes
+                # LangGraph may return node objects or strings depending on version
+                node_ids = [n.id if hasattr(n, "id") else n for n in nodes]
                 for node_name in expected_nodes:
                     self.assertIn(
                         node_name, node_ids,
@@ -793,7 +790,6 @@ class TestGraphCompilation(unittest.TestCase):
                     )
             finally:
                 gb.get_llm = original_get_llm
-                gb.MemorySaver = original_memory
         except ImportError as e:
             self.skipTest(f"langgraph not available: {e}")
 

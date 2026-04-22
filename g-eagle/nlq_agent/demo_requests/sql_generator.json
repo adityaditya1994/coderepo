@@ -1,0 +1,34 @@
+{
+  "description": "Generate SQL from a query plan",
+  "state": {
+    "user_query": "What is the total revenue by region for Q1 2024?",
+    "schema": {
+      "orders": [
+        {"name": "order_id", "type": "bigint"},
+        {"name": "order_date", "type": "date"},
+        {"name": "total_amount", "type": "double"},
+        {"name": "region_id", "type": "int"},
+        {"name": "status", "type": "varchar"}
+      ],
+      "regions": [
+        {"name": "region_id", "type": "int"},
+        {"name": "region_name", "type": "varchar"}
+      ]
+    },
+    "selected_tables": ["orders", "regions"],
+    "query_plan": {
+      "objective": "Calculate total revenue grouped by region for Q1 2024",
+      "tables": ["orders", "regions"],
+      "joins": [{"left": "orders.region_id", "right": "regions.region_id", "type": "INNER"}],
+      "filters": [
+        {"column": "order_date", "op": "BETWEEN", "value": "2024-01-01 AND 2024-03-31"},
+        {"column": "status", "op": "=", "value": "completed"}
+      ],
+      "aggregations": [{"function": "SUM", "column": "total_amount", "alias": "total_revenue"}],
+      "group_by": ["regions.region_name"],
+      "order_by": [{"column": "total_revenue", "direction": "DESC"}]
+    },
+    "memory_context": {},
+    "sql_history": []
+  }
+}
