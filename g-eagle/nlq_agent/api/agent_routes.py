@@ -114,6 +114,17 @@ AGENT_EXAMPLES = {
             }
         },
     },
+    "memory_writer": {
+        "summary": "Memory Writer — save conversation context",
+        "value": {
+            "state": {
+                "user_query": "What is the total revenue by region?",
+                "session_id": "test-session-123",
+                "final_answer": "Total revenue for APAC is 3549.96 and North America is 1919.92.",
+                "sql": "SELECT r.region_name, SUM(o.total_amount) FROM orders o JOIN regions r ON o.region_id = r.region_id GROUP BY r.region_name"
+            }
+        },
+    },
 }
 
 
@@ -159,6 +170,7 @@ def _get_agent_runner(agent_name: str, config: dict, llm):
     from agents.validation.council import validation_council_node
     from agents.summarizer import summarizer_node
     from agents.human_handoff import human_handoff_node
+    from memory.memory_manager import memory_writer_node
 
     runners = {
         "supervisor": lambda s: supervisor_node(s, config, llm),
@@ -171,6 +183,7 @@ def _get_agent_runner(agent_name: str, config: dict, llm):
         "validator": lambda s: validation_council_node(s, config, llm),
         "summarizer": lambda s: summarizer_node(s, config, llm),
         "human_handoff": lambda s: human_handoff_node(s, config),
+        "memory_writer": lambda s: memory_writer_node(s, config),
     }
     return runners.get(agent_name)
 
@@ -178,6 +191,8 @@ def _get_agent_runner(agent_name: str, config: dict, llm):
 def _run_discovery(state: dict, config: dict, llm):
     """Run discovery inline (no catalog path required — uses flatfile from demo)."""
     from pathlib import Path
+    from agents.discovery.flatfile_connector import FlatFileConnector
+    
     api_dir = Path(__file__).parent
     catalog_path = str(api_dir / "demo_data" / "table_catalog.json")
 
@@ -204,7 +219,7 @@ def _run_discovery(state: dict, config: dict, llm):
 SUPPORTED_AGENTS = [
     "supervisor", "discovery", "schema_retriever", "query_planner",
     "sql_generator", "executor", "validator", "summarizer",
-    "sql_fixer", "human_handoff",
+    "sql_fixer", "human_handoff", "memory_writer",
 ]
 
 

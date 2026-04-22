@@ -76,6 +76,27 @@ class CatalogResponse(BaseModel):
     table_count: int
 
 
+class QueryRequest(BaseModel):
+    """Request body for full E2E query."""
+    question: str = Field(
+        ...,
+        description="Natural language question about data",
+        examples=["What is the total revenue by region for Q1 2024?"],
+    )
+    session_id: Optional[str] = Field(
+        default="demo-session-123",
+        description="Optional session ID for memory persistence",
+    )
+
+
+class QueryResponse(BaseModel):
+    """Response from full E2E pipeline."""
+    final_answer: Optional[str] = None
+    sql: Optional[str] = None
+    trace: Optional[list] = None
+    mermaid: Optional[str] = None
+
+
 # ── Endpoints ──
 
 @router.post(
@@ -241,6 +262,71 @@ async def get_catalog():
         tables=tables,
         table_count=len(tables),
     )
+
+
+@router.post(
+    "/query",
+    response_model=QueryResponse,
+    summary="E2E LangGraph Pipeline",
+    description="Run the full agentic pipeline end-to-end and get the final answer, SQL, trace, and mermaid layout.",
+)
+async def run_query(request: QueryRequest):
+    """Execute the full agent pipeline for a query."""
+    import time
+    from config.config_loader import load_config
+    from graph.graph_builder import build_graph
+
+    logger.info("═" * 60)
+    logger.info(f"🚀 POST /query")
+    logger.info(f"   Question: \"{request.question}\"")
+    logger.info("═" * 60)
+
+    t0 = time.time()
+    
+    config = load_config()
+    graph = build_graph(config)
+    
+    initial_state = {
+        "user_query": request.question,
+        "session_id": request.session_id,
+        "discovered_tables": [],
+        "selected_tables": [],
+        "schema": {},
+        "query_plan": {},
+        "sql": "",
+        "sql_history": [],
+        "execution_result": None,
+        "execution_error": None,
+        "retry_count": 0,
+        "validation_result": {},
+        "summary": "",
+        "confidence_score": 0.0,
+        "needs_human": False,
+        "final_answer": None,
+        "memory_context": {},
+        "error_log": [],
+        "trace": [],
+        "agent_mermaid": ""
+    }
+    
+    thread = {"configurable": {"thread_id": request.session_id}}
+    
+    try:
+        final_state = graph.invoke(initial_state, thread)
+        elapsed_ms = (time.time() - t0) * 1000
+        
+        logger.info(f"   ✅ Finished in {elapsed_ms:.0f}ms")
+        
+        return QueryResponse(
+            final_answer=final_state.get("final_answer") or final_state.get("summary"),
+            sql=final_state.get("sql"),
+            trace=final_state.get("trace", []),
+            mermaid=final_state.get("agent_mermaid")
+        )
+    except Exception as e:
+        elapsed_ms = (time.time() - t0) * 1000
+        logger.error(f"   ❌ Pipeline error ({elapsed_ms:.0f}ms): {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get(

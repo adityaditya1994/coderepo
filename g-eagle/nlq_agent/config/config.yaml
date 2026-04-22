@@ -19,9 +19,9 @@ database:
 
 discovery:
   sources:
-    - glue
-    - pinecone
-    - datahub
+    # - glue
+    # - pinecone
+    # - datahub
     - flatfile
   top_k: 5                  # Top K tables to return
 
@@ -36,7 +36,7 @@ memory:
   short_term: true
   long_term: true
   long_term_store: sqlite   # sqlite | dynamodb
-  semantic: true
+  semantic: false           # disabled for local e2e to avoid Pinecone requirement
 
 human_fallback:
   enabled: true

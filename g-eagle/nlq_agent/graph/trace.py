@@ -71,6 +71,13 @@ def trace_end(state: dict, agent_name: str, output: dict, start_time: float) -> 
     # Log key outputs (truncated)
     out_keys = list(output.keys()) if output else []
     logger.info(f"   ✓ output keys: {out_keys}")
+    import json
+    # Ensure any non-serializable objects (like datetime) are stringified if needed, but dict is enough for repr
+    try:
+        encoded = json.dumps(output, default=str)
+        logger.info(f"   ✓ output body: {encoded}")
+    except Exception:
+        logger.info(f"   ✓ output body: {repr(output)}")
 
     if "sql" in output and output["sql"]:
         logger.info(f"   sql: \"{_trunc(output['sql'], 120)}\"")

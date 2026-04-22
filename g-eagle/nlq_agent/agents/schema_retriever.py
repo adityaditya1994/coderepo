@@ -77,9 +77,20 @@ def _retrieve_postgres(discovered: list, pg_config: dict, state: dict) -> dict:
                 rows = cur.fetchall()
 
                 if rows:
-                    schema[table_name] = [
-                        {"name": row[0], "type": row[1]} for row in rows
-                    ]
+                    # Maintain descriptions from the catalog if available
+                    desc_map = {}
+                    if table_info.get("columns"):
+                        for c in table_info["columns"]:
+                            desc_map[c["name"]] = c.get("description", "")
+                            
+                    enriched_cols = []
+                    for row in rows:
+                        col_dict = {"name": row[0], "type": row[1]}
+                        if desc_map.get(row[0]):
+                            col_dict["description"] = desc_map[row[0]]
+                        enriched_cols.append(col_dict)
+                        
+                    schema[table_name] = enriched_cols
                     selected_tables.append(table_name)
                 elif table_info.get("columns"):
                     # Table not in DB, use discovery columns
