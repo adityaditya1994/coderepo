@@ -1,0 +1,25 @@
+portfolio_demos/canvas/canvas.json
+  s_d59d21df37df77::t_324a424bbbf4d2 10-12
+portfolio_demos/canvas/ApprovalQueue.dc.html
+  s_d59d21df37df77::t_07521908c24f9a 11-13,16,18-26,28,30-32,36-48,51-58,60-68,70-94,99-106,108-116,121-136,138
+portfolio_demos/canvas/Funnel.dc.html
+  s_d59d21df37df77::t_07521908c24f9a 11-13,16,18-26,28,30-32,36,38-51,53-55,57-59,61-63,66-71,74,76-79,81-84,86-89,91-94,98-113
+portfolio_demos/canvas/Conversation.dc.html
+  s_d59d21df37df77::t_07521908c24f9a 11-13,16,18-26,28,30-41,46-76,79-80,82-88,90-93,95-98,100-105,107-108,110-124,126-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "1e547788ff4342621c822244e9dde5cf28a41d38",
+  "prompts": {},
+  "sessions": {
+    "s_d59d21df37df77": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2bf6bd66-d9be-46e3-836d-e6804a480b4e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "adityaditya1994 <61052308+adityaditya1994@users.noreply.github.com>"
+    }
+  }
+}
