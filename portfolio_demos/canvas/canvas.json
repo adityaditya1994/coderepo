@@ -1,0 +1,15 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "Grounded Doc Q&A" },
+    { "id": "page-2", "name": "Lead-to-Booked Agent" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html",         "page": "page-1", "title": "Chat — grounded answer",      "x": 0,    "y": 0, "w": 1360, "h": 1120 },
+    { "file": "Evaluation.dc.html",    "page": "page-1", "title": "Evaluation — config compare",  "x": 1460, "y": 0, "w": 1360, "h": 1240 },
+    { "file": "Ingestion.dc.html",     "page": "page-1", "title": "Ingestion log — lineage",      "x": 2920, "y": 0, "w": 1360, "h": 1120 },
+    { "file": "Conversation.dc.html",  "page": "page-2", "title": "Conversation viewer",          "x": 0,    "y": 0, "w": 1360, "h": 1180 },
+    { "file": "Funnel.dc.html",        "page": "page-2", "title": "Lead funnel dashboard",        "x": 1460, "y": 0, "w": 1360, "h": 1060 },
+    { "file": "ApprovalQueue.dc.html", "page": "page-2", "title": "Approval queue",               "x": 2920, "y": 0, "w": 1360, "h": 1080 }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}

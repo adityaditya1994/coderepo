@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+    body { margin: 0; background: #EEF1F4; min-height: 100%; }
+    a { color: #0B6E8F; } a:hover { color: #084E66; }
+  </style>
+</helmet>
+<div style="width: 1360px; background: #EEF1F4; font-family: 'Source Sans 3', system-ui, sans-serif; color: #1B2227; display: flex;">
+
+  <div style="width: 288px; flex-shrink: 0; background: #F7F9FA; border-right: 1px solid #E2E6EA; padding: 26px 22px; display: flex; flex-direction: column; gap: 22px; min-height: 1120px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 26px; height: 26px; border-radius: 6px; background: #0B6E8F; display: flex; align-items: center; justify-content: center;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 5h11M4 12h16M4 19h9"/></svg>
+      </div>
+      <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.01em;">DocQA</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+      <div style="padding: 8px 12px; border-radius: 6px; color: #5A646C; font-size: 14px;">Chat</div>
+      <div style="padding: 8px 12px; border-radius: 6px; color: #5A646C; font-size: 14px;">Evaluation</div>
+      <div style="padding: 8px 12px; border-radius: 6px; background: #E4EEF2; color: #084E66; font-weight: 600; font-size: 14px;">Ingestion</div>
+    </div>
+    <div style="height: 1px; background: #E2E6EA;"></div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: #8A939B;">Last run</div>
+      <div style="display: flex; flex-direction: column; gap: 9px; font-size: 13px;">
+        <div style="display: flex; justify-content: space-between;"><span style="color: #5A646C;">documents seen</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace;">47</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #5A646C;">new / changed</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace;">2</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #5A646C;">unchanged (skipped)</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace;">45</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #5A646C;">OCR-processed</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace;">6</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #5A646C;">chunks total</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace;">3&#8202;914</span></div>
+      </div>
+      <div style="margin-top: 4px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; color: #8A939B; line-height: 1.7;">run 0e12 · idempotent<br>re-run inserted 0 rows</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; padding: 34px 44px; display: flex; flex-direction: column; gap: 22px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <h1 style="margin: 0; font-size: 25px; font-weight: 700; letter-spacing: -0.015em;">Ingestion log</h1>
+      <span style="font-size: 14px; color: #5A646C;">Per-document lineage · parser, OCR decision, pages, chunks, duration</span>
+    </div>
+
+    <div style="background: #fff; border: 1px solid #E2E6EA; border-radius: 10px; overflow: hidden;">
+      <div style="display: grid; grid-template-columns: 2.4fr 1fr 0.7fr 0.8fr 0.8fr 0.9fr; background: #F6F7F9; border-bottom: 1px solid #E2E6EA; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #8A939B;">
+        <div style="padding: 12px 16px;">Document</div>
+        <div style="padding: 12px 16px;">Parser</div>
+        <div style="padding: 12px 16px;">OCR</div>
+        <div style="padding: 12px 16px; text-align: right;">Pages</div>
+        <div style="padding: 12px 16px; text-align: right;">Chunks</div>
+        <div style="padding: 12px 16px; text-align: right;">Duration</div>
+      </div>
+
+      <div style="font-size: 13.5px; font-variant-numeric: tabular-nums;">
+        <div style="display: grid; grid-template-columns: 2.4fr 1fr 0.7fr 0.8fr 0.8fr 0.9fr; border-bottom: 1px solid #EDF0F2; align-items: center;">
+          <div style="padding: 11px 16px; display: flex; align-items: center; gap: 9px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #2F8F4E;"></span>court_opinion_2019.pdf</div>
+          <div style="padding: 11px 16px; color: #5A646C; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px;">pymupdf</div>
+          <div style="padding: 11px 16px; color: #8A939B;">no</div>
+          <div style="padding: 11px 16px; text-align: right;">142</div>
+          <div style="padding: 11px 16px; text-align: right;">611</div>
+          <div style="padding: 11px 16px; text-align: right; color: #5A646C;">4.1s</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 2.4fr 1fr 0.7fr 0.8fr 0.8fr 0.9fr; border-bottom: 1px solid #EDF0F2; align-items: center; background: #FBFCFD;">
+          <div style="padding: 11px 16px; display: flex; align-items: center; gap: 9px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #B9770E;"></span>inspection_report_scan.pdf</div>
+          <div style="padding: 11px 16px; color: #5A646C; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px;">tesseract</div>
+          <div style="padding: 11px 16px;"><span style="background: #F6ECD9; color: #8A5A08; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; padding: 2px 7px; border-radius: 4px;">yes · density 0.04</span></div>
+          <div style="padding: 11px 16px; text-align: right;">18</div>
+          <div style="padding: 11px 16px; text-align: right;">73</div>
+          <div style="padding: 11px 16px; text-align: right; color: #5A646C;">22.6s</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 2.4fr 1fr 0.7fr 0.8fr 0.8fr 0.9fr; border-bottom: 1px solid #EDF0F2; align-items: center;">
+          <div style="padding: 11px 16px; display: flex; align-items: center; gap: 9px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #C6CED4;"></span>eu_directive_2016.pdf</div>
+          <div style="padding: 11px 16px; color: #5A646C; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px;">pymupdf</div>
+          <div style="padding: 11px 16px; color: #8A939B;">no</div>
+          <div style="padding: 11px 16px; text-align: right;">34</div>
+          <div style="padding: 11px 16px; text-align: right;">201</div>
+          <div style="padding: 11px 16px; text-align: right; color: #5A646C;">1.9s</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 2.4fr 1fr 0.7fr 0.8fr 0.8fr 0.9fr; border-bottom: 1px solid #EDF0F2; align-items: center; background: #FBFCFD;">
+          <div style="padding: 11px 16px; display: flex; align-items: center; gap: 9px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #C6CED4;"></span>handbook_v1.docx</div>
+          <div style="padding: 11px 16px; color: #5A646C; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px;">python-docx</div>
+          <div style="padding: 11px 16px; color: #8A939B;">no</div>
+          <div style="padding: 11px 16px; text-align: right;">26</div>
+          <div style="padding: 11px 16px; text-align: right;">88</div>
+          <div style="padding: 11px 16px; text-align: right; color: #5A646C;">0.7s</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 2.4fr 1fr 0.7fr 0.8fr 0.8fr 0.9fr; align-items: center;">
+          <div style="padding: 11px 16px; display: flex; align-items: center; gap: 9px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #0B6E8F;"></span>handbook_v2.docx</div>
+          <div style="padding: 11px 16px; color: #5A646C; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px;">python-docx</div>
+          <div style="padding: 11px 16px; color: #8A939B;">no</div>
+          <div style="padding: 11px 16px; text-align: right;">27</div>
+          <div style="padding: 11px 16px; text-align: right;">91</div>
+          <div style="padding: 11px 16px; text-align: right; color: #5A646C;">0.7s</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="background: #fff; border: 1px solid #E2E6EA; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 9px;">
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #8A939B;">Versioning</span>
+        <span style="font-size: 13.5px; line-height: 1.6; color: #1B2227;"><code style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">handbook_v2.docx</code> superseded <code style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">v1</code> — 88 chunks retired, history kept. Retrieval now resolves to v2; v1 still queryable by version pin.</span>
+      </div>
+      <div style="background: #fff; border: 1px solid #E2E6EA; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 9px;">
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #8A939B;">Idempotence check</span>
+        <span style="font-size: 13.5px; line-height: 1.6; color: #1B2227;"><code style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">make ingest</code> run twice — second pass matched 47/47 sha256, inserted <strong>0</strong> chunk rows. Lineage intact: every chunk resolves to file + page.</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

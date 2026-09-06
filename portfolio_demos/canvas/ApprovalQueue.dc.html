@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+    body { margin: 0; background: #F0EEE9; min-height: 100%; }
+    a { color: #1F5673; } a:hover { color: #164054; }
+  </style>
+</helmet>
+<div style="width: 1360px; background: #F0EEE9; font-family: 'Public Sans', system-ui, sans-serif; color: #1B1D21; display: flex;">
+
+  <div style="width: 288px; flex-shrink: 0; background: #F9F7F3; border-right: 1px solid #E5E1D8; padding: 26px 22px; display: flex; flex-direction: column; gap: 22px; min-height: 1040px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 26px; height: 26px; border-radius: 6px; background: #1F5673; display: flex; align-items: center; justify-content: center;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      </div>
+      <span style="font-weight: 700; font-size: 15.5px; letter-spacing: -0.01em;">LeadAgent</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+      <div style="padding: 8px 12px; border-radius: 6px; color: #4C4F55; font-size: 14px;">Funnel</div>
+      <div style="padding: 8px 12px; border-radius: 6px; color: #4C4F55; font-size: 14px;">Conversations</div>
+      <div style="padding: 8px 12px; border-radius: 6px; background: #E1EBF0; color: #164054; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">Approval queue<span style="background: #B26A00; color: #fff; font-size: 11px; font-family: 'JetBrains Mono', ui-monospace, monospace; padding: 1px 6px; border-radius: 10px;">2</span></div>
+    </div>
+    <div style="height: 1px; background: #E5E1D8;"></div>
+    <div style="display: flex; flex-direction: column; gap: 11px;">
+      <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: #7E828A;">Policy</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+        <div style="display: flex; justify-content: space-between;"><span style="color: #4C4F55;">auto-proceed &ge;</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px;">0.85</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #4C4F55;">cancel</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px;">always queue</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #4C4F55;">live SMS</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px;">always queue</span></div>
+      </div>
+      <div style="margin-top: 4px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #7E828A; line-height: 1.7;">every decision recorded<br>with actor + timestamp</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; padding: 34px 44px; display: flex; flex-direction: column; gap: 22px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.015em;">Approval queue</h1>
+      <span style="font-size: 14px; color: #4C4F55;">Irreversible actions below the confidence threshold wait here for a person</span>
+    </div>
+
+    <!-- item 1 -->
+    <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; overflow: hidden;">
+      <div style="padding: 14px 20px; border-bottom: 1px solid #EFECE5; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+        <div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-weight: 700; font-size: 15px;">Lead #4482 · Priya M.</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #B26A00;">aggregate confidence 0.71</span></div>
+        <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; color: #7E828A;">queued 3m ago</span>
+      </div>
+      <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55; line-height: 1.6;"><span style="color: #164054;">book</span> &rarr; calendar.hold(slot=Fri 10:00–12:00) · address parsed as <span style="background: #F4E7D2; color: #8A5208; padding: 0 4px; border-radius: 3px;">&ldquo;12 Elm Ct&rdquo;</span> — low confidence field</div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px;">
+          <div style="border: 1px solid #EAE7DF; border-radius: 7px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #7E828A;">service_type</span><span style="font-size: 13.5px;">boiler service · 0.94</span></div>
+          <div style="border: 1px solid #EAE7DF; border-radius: 7px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #7E828A;">postcode</span><span style="font-size: 13.5px;">N1 · 0.62</span></div>
+          <div style="border: 1px solid #EAE7DF; border-radius: 7px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #7E828A;">address</span><span style="font-size: 13.5px;">12 Elm Ct · 0.48</span></div>
+        </div>
+        <div style="display: flex; gap: 9px; padding-top: 2px;">
+          <button style="border: none; background: #1F5673; color: #fff; font-family: inherit; font-size: 13.5px; font-weight: 600; padding: 8px 18px; border-radius: 7px; cursor: pointer;">Approve</button>
+          <button style="border: 1px solid #D3CEC2; background: #fff; color: #4C4F55; font-family: inherit; font-size: 13.5px; font-weight: 600; padding: 8px 18px; border-radius: 7px; cursor: pointer;">Edit &amp; approve</button>
+          <button style="border: 1px solid #D3CEC2; background: #fff; color: #4C4F55; font-family: inherit; font-size: 13.5px; font-weight: 600; padding: 8px 18px; border-radius: 7px; cursor: pointer;">Reject</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- item 2 -->
+    <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; overflow: hidden;">
+      <div style="padding: 14px 20px; border-bottom: 1px solid #EFECE5; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+        <div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-weight: 700; font-size: 15px;">Lead #4485 · unknown sender</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #B26A00;">consent flag ambiguous</span></div>
+        <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; color: #7E828A;">queued 11m ago</span>
+      </div>
+      <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55; line-height: 1.6;"><span style="color: #164054;">sms.send</span> (live mode) &rarr; held pending explicit consent confirmation. Rules engine flagged <span style="background: #F4E7D2; color: #8A5208; padding: 0 4px; border-radius: 3px;">consent=null</span>.</div>
+        <div style="display: flex; gap: 9px; padding-top: 2px;">
+          <button style="border: none; background: #1F5673; color: #fff; font-family: inherit; font-size: 13.5px; font-weight: 600; padding: 8px 18px; border-radius: 7px; cursor: pointer;">Approve</button>
+          <button style="border: 1px solid #D3CEC2; background: #fff; color: #4C4F55; font-family: inherit; font-size: 13.5px; font-weight: 600; padding: 8px 18px; border-radius: 7px; cursor: pointer;">Edit &amp; approve</button>
+          <button style="border: 1px solid #D3CEC2; background: #fff; color: #4C4F55; font-family: inherit; font-size: 13.5px; font-weight: 600; padding: 8px 18px; border-radius: 7px; cursor: pointer;">Reject</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #7E828A;">Recently resolved</span>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; color: #4C4F55;">
+        <div style="display: flex; gap: 12px;"><span style="color: #2E7D4F;">approved</span><span>#4479 book — sam@ (14:02)</span></div>
+        <div style="display: flex; gap: 12px;"><span style="color: #2E7D4F;">edit &amp; approved</span><span>#4471 book, fixed time window — sam@ (13:48)</span></div>
+        <div style="display: flex; gap: 12px;"><span style="color: #A83232;">rejected</span><span>#4468 sms.send — abuse flag upheld — sam@ (13:30)</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

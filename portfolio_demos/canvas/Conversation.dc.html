@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+    body { margin: 0; background: #F0EEE9; min-height: 100%; }
+    a { color: #1F5673; } a:hover { color: #164054; }
+  </style>
+</helmet>
+<div style="width: 1360px; background: #F0EEE9; font-family: 'Public Sans', system-ui, sans-serif; color: #1B1D21; display: flex;">
+
+  <div style="width: 288px; flex-shrink: 0; background: #F9F7F3; border-right: 1px solid #E5E1D8; padding: 26px 22px; display: flex; flex-direction: column; gap: 22px; min-height: 1120px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 26px; height: 26px; border-radius: 6px; background: #1F5673; display: flex; align-items: center; justify-content: center;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      </div>
+      <span style="font-weight: 700; font-size: 15.5px; letter-spacing: -0.01em;">LeadAgent</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+      <div style="padding: 8px 12px; border-radius: 6px; color: #4C4F55; font-size: 14px;">Funnel</div>
+      <div style="padding: 8px 12px; border-radius: 6px; background: #E1EBF0; color: #164054; font-weight: 600; font-size: 14px;">Conversations</div>
+      <div style="padding: 8px 12px; border-radius: 6px; color: #4C4F55; font-size: 14px;">Approval queue</div>
+    </div>
+    <div style="height: 1px; background: #E5E1D8;"></div>
+    <div style="display: flex; flex-direction: column; gap: 11px;">
+      <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: #7E828A;">Conversation #4471</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+        <div style="display: flex; justify-content: space-between;"><span style="color: #4C4F55;">lead</span><span>Dana R.</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #4C4F55;">service</span><span>HVAC · AC repair</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #4C4F55;">transport</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px;">mock</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #4C4F55;">tier</span><span style="background: #F5E1E1; color: #A83232; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; padding: 2px 7px; border-radius: 4px;">HOT</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #4C4F55;">outcome</span><span style="color: #2E7D4F; font-weight: 600;">booked</span></div>
+      </div>
+      <div style="margin-top: 4px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #7E828A; line-height: 1.7;">7 messages · 6 tool calls<br>first response 4.2s</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; padding: 34px 44px; display: flex; flex-direction: column; gap: 18px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.015em;">Conversation viewer</h1>
+      <span style="font-size: 14px; color: #4C4F55;">SMS thread with every tool call shown inline at the point it fired</span>
+    </div>
+
+    <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 22px 24px; display: flex; flex-direction: column; gap: 11px;">
+
+      <div style="align-self: stretch; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #4C4F55; background: #F4F2EE; border: 1px solid #E5E1D8; border-left: 2px solid #1F5673; border-radius: 4px; padding: 8px 12px; display: flex; gap: 12px; flex-wrap: wrap;"><span style="color: #164054;">webhook.lead_received</span><span>name=Dana · &ldquo;AC not cooling&rdquo; · SW2 1AA</span></div>
+
+      <div style="align-self: flex-end; max-width: 66%; background: #1F5673; color: #fff; padding: 9px 13px; border-radius: 11px; border-bottom-right-radius: 3px; font-size: 14px; line-height: 1.5;">Hi Dana — sorry the AC isn&rsquo;t keeping up. Is this for a home or a business?</div>
+      <div style="align-self: flex-start; max-width: 66%; background: #F1EFEA; padding: 9px 13px; border-radius: 11px; border-bottom-left-radius: 3px; font-size: 14px; line-height: 1.5;">home</div>
+      <div style="align-self: flex-end; max-width: 66%; background: #1F5673; color: #fff; padding: 9px 13px; border-radius: 11px; border-bottom-right-radius: 3px; font-size: 14px; line-height: 1.5;">Got it. Is it not cooling at all, or cooling weakly?</div>
+      <div style="align-self: flex-start; max-width: 66%; background: #F1EFEA; padding: 9px 13px; border-radius: 11px; border-bottom-left-radius: 3px; font-size: 14px; line-height: 1.5;">runs all the time but the house stays warm</div>
+
+      <div style="align-self: stretch; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #4C4F55; background: #F4F2EE; border: 1px solid #E5E1D8; border-left: 2px solid #1F5673; border-radius: 4px; padding: 8px 12px; display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline;"><span style="color: #164054;">calendar.find_availability</span><span>window=48h</span><span style="margin-left: auto; color: #7E828A;">&rarr; 3 slots</span></div>
+
+      <div style="align-self: flex-end; max-width: 66%; background: #1F5673; color: #fff; padding: 9px 13px; border-radius: 11px; border-bottom-right-radius: 3px; font-size: 14px; line-height: 1.5;">A technician can come tomorrow 1–3pm or Thursday 9–11am. Which works?</div>
+      <div style="align-self: flex-start; max-width: 66%; background: #F1EFEA; padding: 9px 13px; border-radius: 11px; border-bottom-left-radius: 3px; font-size: 14px; line-height: 1.5;">tomorrow is great</div>
+
+      <div style="align-self: stretch; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #4C4F55; background: #F0F5F0; border: 1px solid #DBE7DB; border-left: 2px solid #2E7D4F; border-radius: 4px; padding: 8px 12px; display: flex; gap: 12px; flex-wrap: wrap;"><span style="color: #2E7D4F;">qualify &rarr; HOT</span><span>reasons: in_service_area, service_type_supported, urgency=high, consent=true</span></div>
+      <div style="align-self: stretch; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #4C4F55; background: #F0F5F0; border: 1px solid #DBE7DB; border-left: 2px solid #2E7D4F; border-radius: 4px; padding: 8px 12px; display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline;"><span style="color: #2E7D4F;">approval_policy</span><span>confidence 0.93 &ge; threshold 0.85</span><span style="margin-left: auto; color: #7E828A;">&rarr; auto-proceed</span></div>
+
+      <div style="align-self: stretch; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #4C4F55; background: #F4F2EE; border: 1px solid #E5E1D8; border-left: 2px solid #1F5673; border-radius: 4px; padding: 8px 12px; display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline;"><span style="color: #164054;">calendar.book</span><span>slot=tomorrow 13:00–15:00</span><span style="margin-left: auto; color: #7E828A;">&rarr; confirmed</span></div>
+      <div style="align-self: stretch; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #4C4F55; background: #F4F2EE; border: 1px solid #E5E1D8; border-left: 2px solid #1F5673; border-radius: 4px; padding: 8px 12px; display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline;"><span style="color: #164054;">crm.upsert_contact + attach_qualification</span><span style="margin-left: auto; color: #7E828A;">&rarr; written</span></div>
+      <div style="align-self: stretch; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #4C4F55; background: #F4F2EE; border: 1px solid #E5E1D8; border-left: 2px solid #1F5673; border-radius: 4px; padding: 8px 12px; display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline;"><span style="color: #164054;">sms.send</span><span>confirmation</span><span style="margin-left: auto; color: #7E828A;">&rarr; delivered</span></div>
+
+      <div style="align-self: flex-end; max-width: 66%; background: #1F5673; color: #fff; padding: 9px 13px; border-radius: 11px; border-bottom-right-radius: 3px; font-size: 14px; line-height: 1.5;">Booked for tomorrow 1–3pm. You&rsquo;ll get a confirmation text shortly. Anything else?</div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+    body { margin: 0; background: #EEF1F4; min-height: 100%; }
+    a { color: #0B6E8F; } a:hover { color: #084E66; }
+  </style>
+</helmet>
+<div style="width: 1360px; background: #EEF1F4; font-family: 'Source Sans 3', system-ui, sans-serif; color: #1B2227; display: flex;">
+
+  <!-- sidebar -->
+  <div style="width: 288px; flex-shrink: 0; background: #F7F9FA; border-right: 1px solid #E2E6EA; padding: 26px 22px; display: flex; flex-direction: column; gap: 22px; min-height: 1040px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 26px; height: 26px; border-radius: 6px; background: #0B6E8F; display: flex; align-items: center; justify-content: center;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 5h11M4 12h16M4 19h9"/></svg>
+      </div>
+      <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.01em;">DocQA</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+      <div style="padding: 8px 12px; border-radius: 6px; background: #E4EEF2; color: #084E66; font-weight: 600; font-size: 14px;">Chat</div>
+      <div style="padding: 8px 12px; border-radius: 6px; color: #5A646C; font-size: 14px;">Evaluation</div>
+    </div>
+
+    <div style="height: 1px; background: #E2E6EA;"></div>
+
+    <div style="display: flex; flex-direction: column; gap: 13px;">
+      <div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: #8A939B;">Retrieval config</div>
+
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <span style="font-size: 12.5px; color: #5A646C;">Chunking strategy</span>
+        <div style="border: 1px solid #CDD5DB; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center;">structural<span style="color: #8A939B;">&#9662;</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <span style="font-size: 12.5px; color: #5A646C;">Reranker</span>
+        <div style="border: 1px solid #CDD5DB; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center;">cross-encoder&nbsp;·&nbsp;on<span style="color: #8A939B;">&#9662;</span></div>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+          <span style="font-size: 12.5px; color: #5A646C;">Top-k</span>
+          <div style="border: 1px solid #CDD5DB; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px;">5</div>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+          <span style="font-size: 12.5px; color: #5A646C;">Score floor</span>
+          <div style="border: 1px solid #CDD5DB; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px;">0.30</div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <span style="font-size: 12.5px; color: #5A646C;">Fusion</span>
+        <div style="border: 1px solid #CDD5DB; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center;">reciprocal rank fusion<span style="color: #8A939B;">&#9662;</span></div>
+      </div>
+
+      <div style="margin-top: 4px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; color: #8A939B; line-height: 1.6;">active config<br><span style="color: #0B6E8F;">structural + rerank</span> · a3f9c1</div>
+    </div>
+  </div>
+
+  <!-- main -->
+  <div style="flex: 1; padding: 34px 44px; display: flex; flex-direction: column; gap: 22px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <h1 style="margin: 0; font-size: 25px; font-weight: 700; letter-spacing: -0.015em;">Ask the corpus</h1>
+      <span style="font-size: 14px; color: #5A646C;">47 documents indexed · 6 scanned · 3 near-duplicate pairs</span>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: stretch;">
+      <div style="flex: 1; border: 1px solid #CDD5DB; border-radius: 8px; padding: 13px 15px; background: #fff; font-size: 15px; color: #1B2227;">What is the termination notice period in the master services agreement, and did it change between versions?</div>
+      <button style="border: none; background: #0B6E8F; color: #fff; font-family: inherit; font-size: 14.5px; font-weight: 600; padding: 0 26px; border-radius: 8px; cursor: pointer;">Ask</button>
+    </div>
+
+    <!-- answer card -->
+    <div style="background: #fff; border: 1px solid #E2E6EA; border-radius: 10px; overflow: hidden;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid #EDF0F2; display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #5A646C;">Answer</span>
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A939B;">5 chunks · 2 documents · 1.8s</span>
+      </div>
+      <div style="padding: 18px 20px; font-size: 15.5px; line-height: 1.62;">
+        The MSA requires <strong style="background: #E4EEF2; padding: 0 3px; border-radius: 3px;">60 days&rsquo; written notice</strong> for termination for convenience
+        (v2, &sect;12.3). This changed from <strong style="background: #E4EEF2; padding: 0 3px; border-radius: 3px;">30 days</strong> in v1 &sect;12.2. The near-duplicate pair is
+        resolved to the later version and both are cited.
+      </div>
+
+      <div style="padding: 14px 20px 18px; border-top: 1px solid #EDF0F2; background: #FAFBFC; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: #1B2227;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A646C" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          Citations (3)
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="border: 1px solid #E2E6EA; border-radius: 8px; padding: 12px 14px; background: #fff; display: flex; flex-direction: column; gap: 7px;">
+            <div style="display: flex; align-items: baseline; gap: 12px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">
+              <span style="color: #0B6E8F;">MSA_Acme_v2.pdf</span><span style="color: #5A646C;">p. 14 · &sect;12.3</span>
+              <span style="margin-left: auto; color: #8A939B;">rerank 0.94</span>
+            </div>
+            <div style="font-size: 13px; color: #5A646C; line-height: 1.55; background: #F6F7F9; border-radius: 5px; padding: 8px 10px;">&ldquo;&hellip; either party may terminate this Agreement for convenience upon sixty (60) days&rsquo; prior written notice to the other party &hellip;&rdquo;</div>
+          </div>
+          <div style="border: 1px solid #E2E6EA; border-radius: 8px; padding: 12px 14px; background: #fff; display: flex; flex-direction: column; gap: 7px;">
+            <div style="display: flex; align-items: baseline; gap: 12px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">
+              <span style="color: #0B6E8F;">MSA_Acme_v1.pdf</span><span style="color: #5A646C;">p. 13 · &sect;12.2</span>
+              <span style="margin-left: auto; color: #8A939B;">rerank 0.87</span>
+            </div>
+            <div style="font-size: 13px; color: #5A646C; line-height: 1.55; background: #F6F7F9; border-radius: 5px; padding: 8px 10px;">&ldquo;&hellip; upon thirty (30) days&rsquo; prior written notice &hellip;&rdquo;</div>
+          </div>
+          <div style="border: 1px solid #E2E6EA; border-radius: 8px; padding: 12px 14px; background: #fff; display: flex; flex-direction: column; gap: 7px;">
+            <div style="display: flex; align-items: baseline; gap: 12px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">
+              <span style="color: #0B6E8F;">amendment_2023-08.docx</span><span style="color: #5A646C;">p. 2</span>
+              <span style="margin-left: auto; color: #8A939B;">rerank 0.71</span>
+            </div>
+            <div style="font-size: 13px; color: #5A646C; line-height: 1.55; background: #F6F7F9; border-radius: 5px; padding: 8px 10px;">&ldquo;&hellip; Section 12 of the Agreement is hereby amended and restated in its entirety &hellip;&rdquo;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- refusal example -->
+    <div style="background: #fff; border: 1px solid #E2E6EA; border-left: 3px solid #B9770E; border-radius: 10px; padding: 16px 20px; display: flex; flex-direction: column; gap: 6px;">
+      <span style="font-size: 14px; font-weight: 600;">Q &nbsp;&ldquo;What were Q3 2024 headcount numbers for the EMEA sales team?&rdquo;</span>
+      <span style="font-size: 14.5px; line-height: 1.6; color: #1B2227;"><strong style="color: #B9770E;">Not in the corpus.</strong> No retrieved chunk cleared the score floor (top candidate 0.19, floor 0.35). The system does not guess.</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

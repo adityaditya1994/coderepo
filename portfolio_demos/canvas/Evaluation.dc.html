@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+    body { margin: 0; background: #EEF1F4; min-height: 100%; }
+    a { color: #0B6E8F; } a:hover { color: #084E66; }
+  </style>
+</helmet>
+<div style="width: 1360px; background: #EEF1F4; font-family: 'Source Sans 3', system-ui, sans-serif; color: #1B2227; display: flex;">
+
+  <div style="width: 288px; flex-shrink: 0; background: #F7F9FA; border-right: 1px solid #E2E6EA; padding: 26px 22px; display: flex; flex-direction: column; gap: 22px; min-height: 1180px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 26px; height: 26px; border-radius: 6px; background: #0B6E8F; display: flex; align-items: center; justify-content: center;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 5h11M4 12h16M4 19h9"/></svg>
+      </div>
+      <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.01em;">DocQA</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+      <div style="padding: 8px 12px; border-radius: 6px; color: #5A646C; font-size: 14px;">Chat</div>
+      <div style="padding: 8px 12px; border-radius: 6px; background: #E4EEF2; color: #084E66; font-weight: 600; font-size: 14px;">Evaluation</div>
+    </div>
+    <div style="height: 1px; background: #E2E6EA;"></div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: #8A939B;">Run</div>
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <span style="font-size: 12.5px; color: #5A646C;">Golden set</span>
+        <div style="border: 1px solid #CDD5DB; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center;">golden_set v1 · 47 Q<span style="color: #8A939B;">&#9662;</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <span style="font-size: 12.5px; color: #5A646C;">Matrix</span>
+        <div style="border: 1px solid #CDD5DB; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px;">2 chunking × rerank on/off</div>
+      </div>
+      <div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; color: #8A939B; line-height: 1.7;">last run<br>4 configs · 188 questions · 6m 12s</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; padding: 34px 44px; display: flex; flex-direction: column; gap: 24px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <h1 style="margin: 0; font-size: 25px; font-weight: 700; letter-spacing: -0.015em;">Retrieval evaluation</h1>
+      <span style="font-size: 14px; color: #5A646C;">Config comparison against the golden set — before generation and after</span>
+    </div>
+
+    <!-- comparison table -->
+    <div style="background: #fff; border: 1px solid #E2E6EA; border-radius: 10px; overflow: hidden;">
+      <div style="display: grid; grid-template-columns: 1.7fr 1fr 1fr 0.7fr; background: #F6F7F9; border-bottom: 1px solid #E2E6EA; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8A939B;">
+        <div style="padding: 12px 18px;">Metric</div>
+        <div style="padding: 12px 18px; text-align: right;">A · fixed_token / no rerank</div>
+        <div style="padding: 12px 18px; text-align: right;">B · structural + rerank</div>
+        <div style="padding: 12px 18px; text-align: right;">&Delta;</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1.7fr 1fr 1fr 0.7fr; font-size: 14px; font-variant-numeric: tabular-nums;">
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; font-weight: 600;">Hit-rate@5</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #5A646C;">0.71</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; font-weight: 700;">0.89</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #2F8F4E; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">+0.18</div>
+
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; font-weight: 600;">MRR</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #5A646C;">0.58</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; font-weight: 700;">0.76</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #2F8F4E; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">+0.18</div>
+
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; font-weight: 600;">Context precision</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #5A646C;">0.64</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; font-weight: 700;">0.81</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #2F8F4E; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">+0.17</div>
+
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; font-weight: 600;">Context recall</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #5A646C;">0.79</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; font-weight: 700;">0.86</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #2F8F4E; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">+0.07</div>
+
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; font-weight: 600;">Faithfulness</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #5A646C;">0.82</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; font-weight: 700;">0.94</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #2F8F4E; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">+0.12</div>
+
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; font-weight: 600;">Answer relevancy</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #5A646C;">0.85</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; font-weight: 700;">0.90</div>
+        <div style="padding: 11px 18px; border-bottom: 1px solid #EDF0F2; text-align: right; color: #2F8F4E; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">+0.05</div>
+
+        <div style="padding: 11px 18px; font-weight: 600;">Refusal accuracy (5 unanswerable)</div>
+        <div style="padding: 11px 18px; text-align: right; color: #5A646C;">3 / 5</div>
+        <div style="padding: 11px 18px; text-align: right; font-weight: 700;">5 / 5</div>
+        <div style="padding: 11px 18px; text-align: right; color: #2F8F4E; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px;">+2</div>
+      </div>
+    </div>
+
+    <!-- bar charts -->
+    <div style="background: #fff; border: 1px solid #E2E6EA; border-radius: 10px; padding: 20px 22px; display: flex; flex-direction: column; gap: 16px;">
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #8A939B;">Per-metric comparison</span>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center;">
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px; color: #5A646C;">Hit-rate@5</span>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: grid; grid-template-columns: 1fr 44px; gap: 10px; align-items: center;"><div style="height: 15px; background: #F0F2F4; border-radius: 3px;"><div style="width: 71%; height: 100%; background: #C6CED4; border-radius: 3px;"></div></div><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A939B; text-align: right;">0.71</span></div>
+            <div style="display: grid; grid-template-columns: 1fr 44px; gap: 10px; align-items: center;"><div style="height: 15px; background: #F0F2F4; border-radius: 3px;"><div style="width: 89%; height: 100%; background: #0B6E8F; border-radius: 3px;"></div></div><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #084E66; text-align: right;">0.89</span></div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center;">
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px; color: #5A646C;">Faithfulness</span>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: grid; grid-template-columns: 1fr 44px; gap: 10px; align-items: center;"><div style="height: 15px; background: #F0F2F4; border-radius: 3px;"><div style="width: 82%; height: 100%; background: #C6CED4; border-radius: 3px;"></div></div><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A939B; text-align: right;">0.82</span></div>
+            <div style="display: grid; grid-template-columns: 1fr 44px; gap: 10px; align-items: center;"><div style="height: 15px; background: #F0F2F4; border-radius: 3px;"><div style="width: 94%; height: 100%; background: #0B6E8F; border-radius: 3px;"></div></div><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #084E66; text-align: right;">0.94</span></div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center;">
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px; color: #5A646C;">Context precision</span>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: grid; grid-template-columns: 1fr 44px; gap: 10px; align-items: center;"><div style="height: 15px; background: #F0F2F4; border-radius: 3px;"><div style="width: 64%; height: 100%; background: #C6CED4; border-radius: 3px;"></div></div><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A939B; text-align: right;">0.64</span></div>
+            <div style="display: grid; grid-template-columns: 1fr 44px; gap: 10px; align-items: center;"><div style="height: 15px; background: #F0F2F4; border-radius: 3px;"><div style="width: 81%; height: 100%; background: #0B6E8F; border-radius: 3px;"></div></div><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #084E66; text-align: right;">0.81</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 20px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11.5px; color: #8A939B;">
+        <span style="display: flex; align-items: center; gap: 7px;"><span style="width: 11px; height: 11px; border-radius: 2px; background: #C6CED4;"></span>Config A · fixed_token, no rerank</span>
+        <span style="display: flex; align-items: center; gap: 7px;"><span style="width: 11px; height: 11px; border-radius: 2px; background: #0B6E8F;"></span>Config B · structural + rerank</span>
+      </div>
+    </div>
+
+    <div style="background: #E3F1E7; border: 1px solid #2F8F4E; border-radius: 8px; padding: 13px 16px; font-size: 14px; line-height: 1.55;">
+      <strong>Config B wins.</strong> The gains concentrate on the hard cases — answers spanning two documents, answers only in a scanned page,
+      and answers only in v2 of a near-duplicate pair. Drill into any question to see the retrieved chunks per config.
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

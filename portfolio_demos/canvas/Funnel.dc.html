@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+    body { margin: 0; background: #F0EEE9; min-height: 100%; }
+    a { color: #1F5673; } a:hover { color: #164054; }
+  </style>
+</helmet>
+<div style="width: 1360px; background: #F0EEE9; font-family: 'Public Sans', system-ui, sans-serif; color: #1B1D21; display: flex;">
+
+  <div style="width: 288px; flex-shrink: 0; background: #F9F7F3; border-right: 1px solid #E5E1D8; padding: 26px 22px; display: flex; flex-direction: column; gap: 22px; min-height: 1060px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 26px; height: 26px; border-radius: 6px; background: #1F5673; display: flex; align-items: center; justify-content: center;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      </div>
+      <span style="font-weight: 700; font-size: 15.5px; letter-spacing: -0.01em;">LeadAgent</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+      <div style="padding: 8px 12px; border-radius: 6px; background: #E1EBF0; color: #164054; font-weight: 600; font-size: 14px;">Funnel</div>
+      <div style="padding: 8px 12px; border-radius: 6px; color: #4C4F55; font-size: 14px;">Conversations</div>
+      <div style="padding: 8px 12px; border-radius: 6px; color: #4C4F55; font-size: 14px;">Approval queue</div>
+    </div>
+    <div style="height: 1px; background: #E5E1D8;"></div>
+    <div style="display: flex; flex-direction: column; gap: 11px;">
+      <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: #7E828A;">Window</div>
+      <div style="border: 1px solid #D3CEC2; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center;">last 100 leads<span style="color: #7E828A;">&#9662;</span></div>
+      <div style="border: 1px solid #D3CEC2; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center;">all service types<span style="color: #7E828A;">&#9662;</span></div>
+      <div style="margin-top: 4px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #7E828A; line-height: 1.7;">replay suite: 20 / 20 pass<br>deterministic</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; padding: 34px 44px; display: flex; flex-direction: column; gap: 24px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.015em;">Lead funnel</h1>
+      <span style="font-size: 14px; color: #4C4F55;">Stage-by-stage drop-off, and how far the agent got without a human</span>
+    </div>
+
+    <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+      <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #7E828A;">Funnel</span>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: grid; grid-template-columns: 120px 1fr 90px; gap: 16px; align-items: center;">
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55;">leads in</span>
+          <div style="height: 32px; background: #1F5673; border-radius: 4px; width: 100%;"></div>
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; text-align: right; font-weight: 600;">100</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 120px 1fr 90px; gap: 16px; align-items: center;">
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55;">qualified</span>
+          <div style="display: flex; align-items: center; gap: 12px;"><div style="height: 32px; background: #2F6C8C; border-radius: 4px; width: 74%;"></div><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; color: #9A5B00;">&minus;26 not in area / incomplete</span></div>
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; text-align: right; font-weight: 600;">74</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 120px 1fr 90px; gap: 16px; align-items: center;">
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55;">booked</span>
+          <div style="display: flex; align-items: center; gap: 12px;"><div style="height: 32px; background: #4F87A5; border-radius: 4px; width: 45%;"></div><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; color: #9A5B00;">&minus;29 no slot / went cold</span></div>
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; text-align: right; font-weight: 600;">45</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 120px 1fr 90px; gap: 16px; align-items: center;">
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55;">no-contact</span>
+          <div style="height: 32px; background: #A9BDC9; border-radius: 4px; width: 12%;"></div>
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; text-align: right; font-weight: 600;">12</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
+      <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">4.2s</span>
+        <span style="font-size: 12.5px; color: #7E828A; line-height: 1.4;">median first-response latency</span>
+      </div>
+      <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">98.6%</span>
+        <span style="font-size: 12.5px; color: #7E828A; line-height: 1.4;">tool-call success rate</span>
+      </div>
+      <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">61%</span>
+        <span style="font-size: 12.5px; color: #7E828A; line-height: 1.4;">booked without human intervention</span>
+      </div>
+      <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">2</span>
+        <span style="font-size: 12.5px; color: #7E828A; line-height: 1.4;">approval queue depth</span>
+      </div>
+    </div>
+
+    <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px;">
+      <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #7E828A;">Tier mix — last 100</span>
+      <div style="display: flex; gap: 6px; height: 34px; border-radius: 5px; overflow: hidden;">
+        <div style="width: 22%; background: #BE3A3A; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px;">hot 22</div>
+        <div style="width: 40%; background: #C9861C; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px;">warm 40</div>
+        <div style="width: 24%; background: #4F80A3; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px;">cold 24</div>
+        <div style="width: 14%; background: #9A9AA0; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px;">disq 14</div>
+      </div>
+      <span style="font-size: 13px; color: #4C4F55; line-height: 1.55;">Every tier assignment carries a <code style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px;">reasons[]</code> string from the rules engine — the model never sets the tier.</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,564 @@
+<title>Lead-to-Booked Agent</title>
+<meta name="description" content="An action-taking agent where the LLM handles conversation and code governs every decision — with a human approval gate before anything irreversible.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --paper: #F6F5F1;
+    --surface: #FFFFFF;
+    --surface-sunk: #EFEEE8;
+    --ink: #1B1D21;
+    --ink-soft: #4C4F55;
+    --ink-faint: #7E828A;
+    --hairline: #D8D6CD;
+    --hairline-soft: #E6E4DB;
+    --accent: #1F5673;
+    --accent-soft: #E1EBF0;
+    --accent-ink: #164054;
+    --gate: #B26A00;
+    --gate-soft: #F4E7D2;
+    --hot: #BE3A3A;
+    --warm: #C9861C;
+    --cold: #4F80A3;
+    --disq: #86868A;
+    --ok: #2E7D4F;
+    --shadow: 0 1px 2px rgba(27, 29, 33, 0.05), 0 10px 30px rgba(27, 29, 33, 0.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #111311;
+      --surface: #1A1C1B;
+      --surface-sunk: #232624;
+      --ink: #ECEBE6;
+      --ink-soft: #ABAAA3;
+      --ink-faint: #7C7D78;
+      --hairline: #313431;
+      --hairline-soft: #262927;
+      --accent: #63A9C6;
+      --accent-soft: #16323E;
+      --accent-ink: #A9D6E6;
+      --gate: #E2A34C;
+      --gate-soft: #362A17;
+      --hot: #E07B7B;
+      --warm: #E0AC5A;
+      --cold: #78A6C2;
+      --disq: #9A9A9E;
+      --ok: #5FBE86;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #111311;
+    --surface: #1A1C1B;
+    --surface-sunk: #232624;
+    --ink: #ECEBE6;
+    --ink-soft: #ABAAA3;
+    --ink-faint: #7C7D78;
+    --hairline: #313431;
+    --hairline-soft: #262927;
+    --accent: #63A9C6;
+    --accent-soft: #16323E;
+    --accent-ink: #A9D6E6;
+    --gate: #E2A34C;
+    --gate-soft: #362A17;
+    --hot: #E07B7B;
+    --warm: #E0AC5A;
+    --cold: #78A6C2;
+    --disq: #9A9A9E;
+    --ok: #5FBE86;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.45);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, sans-serif;
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .col { max-width: 660px; }
+
+  h1, h2, h3 {
+    font-family: "Archivo", system-ui, sans-serif;
+    line-height: 1.14;
+    text-wrap: balance;
+    margin: 0;
+    letter-spacing: -0.015em;
+  }
+  h1 { font-size: clamp(2.05rem, 1.3rem + 3.2vw, 3.35rem); font-weight: 700; }
+  h2 { font-size: clamp(1.45rem, 1.15rem + 1.5vw, 1.95rem); font-weight: 600; }
+  h3 { font-size: 1.12rem; font-weight: 600; letter-spacing: -0.01em; }
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent-ink); text-underline-offset: 2px; }
+
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0 0 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .eyebrow::before { content: ""; width: 24px; height: 2px; background: var(--accent); }
+
+  section { padding: clamp(3rem, 2rem + 5vw, 5.5rem) 0; border-top: 1px solid var(--hairline-soft); }
+  section:first-of-type { border-top: none; }
+
+  .hero { padding-top: clamp(3.5rem, 2rem + 6vw, 6rem); padding-bottom: clamp(2.5rem, 2rem + 3vw, 4rem); }
+  .hero .lede { font-size: 1.2rem; color: var(--ink-soft); max-width: 620px; }
+  .claim {
+    margin: 2rem 0 0;
+    padding: 1.3rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    font-family: "Archivo", sans-serif;
+    font-weight: 500;
+    font-size: 1.18rem;
+    line-height: 1.42;
+    max-width: 640px;
+    letter-spacing: -0.01em;
+  }
+  .claim .q { color: var(--accent-ink); }
+
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2rem; }
+  .badge {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.74rem;
+    padding: 4px 10px;
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    color: var(--ink-soft);
+    background: var(--surface);
+  }
+
+  .meta-row { display: flex; flex-wrap: wrap; gap: 2.5rem; margin-top: 2.5rem; padding-top: 1.6rem; border-top: 1px solid var(--hairline-soft); }
+  .meta-row div { display: flex; flex-direction: column; gap: 2px; }
+  .meta-row dt { font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); font-family: "JetBrains Mono", monospace; }
+  .meta-row dd { margin: 0; font-size: 0.97rem; color: var(--ink); font-weight: 600; }
+
+  .lead-in { color: var(--ink-soft); font-size: 1.05rem; max-width: 640px; margin-bottom: 2.5rem; }
+
+  figure { margin: 0; }
+  .diagram { background: var(--surface); border: 1px solid var(--hairline); border-radius: 5px; padding: 1.8rem; box-shadow: var(--shadow); overflow-x: auto; }
+  .diagram svg { display: block; width: 100%; height: auto; min-width: 680px; color: var(--ink-soft); }
+  figcaption { margin-top: 0.9rem; font-size: 0.88rem; color: var(--ink-faint); max-width: 640px; }
+
+  .panel { background: var(--surface); border: 1px solid var(--hairline); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
+  .panel-head { padding: 0.9rem 1.3rem; border-bottom: 1px solid var(--hairline-soft); display: flex; justify-content: space-between; align-items: center; gap: 1rem; background: var(--surface-sunk); }
+  .panel-head .title { font-family: "JetBrains Mono", monospace; font-size: 0.78rem; letter-spacing: 0.03em; color: var(--ink-soft); }
+  .panel-head .flag { font-family: "JetBrains Mono", monospace; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-faint); border: 1px dashed var(--hairline); padding: 2px 8px; border-radius: 3px; }
+
+  /* qualification split */
+  .qual { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .qual > div { padding: 1.4rem 1.5rem; }
+  .qual .inp { border-right: 1px solid var(--hairline-soft); }
+  .qual h3 { margin-bottom: 0.9rem; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 0.4rem 1rem; font-family: "JetBrains Mono", monospace; font-size: 0.8rem; }
+  .kv dt { color: var(--ink-faint); }
+  .kv dd { margin: 0; color: var(--ink); }
+  .rules { display: grid; gap: 0.5rem; }
+  .rule { display: flex; align-items: baseline; gap: 0.6rem; font-family: "JetBrains Mono", monospace; font-size: 0.78rem; }
+  .rule .mark { color: var(--ok); font-weight: 500; }
+  .rule .mark.no { color: var(--disq); }
+  .tier { margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px solid var(--hairline-soft); display: flex; align-items: center; gap: 0.7rem; }
+  .pill { font-family: "JetBrains Mono", monospace; font-size: 0.74rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 10px; border-radius: 4px; }
+  .pill.hot { background: color-mix(in srgb, var(--hot) 16%, transparent); color: var(--hot); border: 1px solid var(--hot); }
+  .tier .score { font-family: "JetBrains Mono", monospace; font-size: 0.8rem; color: var(--ink-soft); }
+  .no-llm { margin-top: 1.6rem; padding: 0.9rem 1.2rem; background: var(--accent-soft); border-radius: 4px; font-size: 0.9rem; color: var(--accent-ink); font-weight: 500; }
+
+  /* transcript */
+  .thread { display: grid; gap: 0.7rem; padding: 1.3rem; }
+  .msg { max-width: 78%; padding: 0.6rem 0.9rem; border-radius: 10px; font-size: 0.92rem; line-height: 1.5; }
+  .msg.in { background: var(--surface-sunk); align-self: flex-start; border-bottom-left-radius: 3px; }
+  .msg.out { background: var(--accent); color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
+  :root[data-theme="dark"] .msg.out, :root:not([data-theme="light"]) .msg.out { color: #0b1a20; }
+  .sys { align-self: center; width: 100%; }
+  .tool {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    background: var(--surface-sunk);
+    border: 1px solid var(--hairline-soft);
+    border-left: 2px solid var(--accent);
+    border-radius: 3px;
+    padding: 0.5rem 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.7rem;
+  }
+  .tool .name { color: var(--accent-ink); }
+  .tool .res { color: var(--ink-faint); margin-left: auto; }
+  .tool.gatestop { border-left-color: var(--gate); }
+  .tool.gatestop .name { color: var(--gate); }
+  .tool.decision { border-left-color: var(--ok); }
+  .tool.decision .name { color: var(--ok); }
+
+  /* approval queue */
+  .queue-card { padding: 1.2rem 1.3rem; display: grid; gap: 0.8rem; }
+  .queue-item { border: 1px solid var(--hairline); border-radius: 5px; padding: 0.9rem 1rem; display: grid; gap: 0.5rem; }
+  .queue-item .top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; font-size: 0.86rem; }
+  .queue-item .top .who { font-weight: 600; }
+  .queue-item .top .conf { font-family: "JetBrains Mono", monospace; font-size: 0.76rem; color: var(--gate); }
+  .queue-item .act { font-family: "JetBrains Mono", monospace; font-size: 0.78rem; color: var(--ink-soft); }
+  .queue-item .btns { display: flex; gap: 0.5rem; margin-top: 0.2rem; }
+  .qbtn { font-family: "Public Sans", sans-serif; font-size: 0.8rem; font-weight: 600; padding: 4px 12px; border-radius: 4px; border: 1px solid var(--hairline); background: var(--surface); color: var(--ink-soft); }
+  .qbtn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  :root[data-theme="dark"] .qbtn.primary, :root:not([data-theme="light"]) .qbtn.primary { color: #0b1a20; }
+
+  /* funnel */
+  .funnel { display: grid; gap: 0.6rem; padding: 1.3rem; }
+  .fstage { display: grid; grid-template-columns: 7rem 1fr 4rem; gap: 0.9rem; align-items: center; }
+  .fstage .flab { font-family: "JetBrains Mono", monospace; font-size: 0.8rem; color: var(--ink-soft); }
+  .fstage .fbar { height: 30px; background: var(--accent); border-radius: 3px; opacity: 0.9; }
+  .fstage:nth-child(2) .fbar { opacity: 1; }
+  .fstage:nth-child(3) .fbar { opacity: 0.72; }
+  .fstage:nth-child(4) .fbar { opacity: 0.5; }
+  .fstage .fval { font-family: "JetBrains Mono", monospace; font-size: 0.86rem; text-align: right; font-variant-numeric: tabular-nums; }
+  .fstage .drop { font-size: 0.72rem; color: var(--ink-faint); font-family: "JetBrains Mono", monospace; }
+
+  .statgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--hairline-soft); border: 1px solid var(--hairline-soft); border-radius: 5px; overflow: hidden; margin-top: 1.5rem; }
+  .stat { background: var(--surface); padding: 1.1rem 1.2rem; }
+  .stat .v { font-family: "Archivo", sans-serif; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .stat .k { font-size: 0.8rem; color: var(--ink-faint); margin-top: 0.2rem; }
+
+  .scenarios { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.6rem; }
+  .scn { display: flex; gap: 0.6rem; align-items: baseline; font-size: 0.87rem; padding: 0.6rem 0.8rem; background: var(--surface); border: 1px solid var(--hairline-soft); border-radius: 4px; }
+  .scn .ok { color: var(--ok); font-family: "JetBrains Mono", monospace; font-size: 0.78rem; }
+
+  .run { background: #0F1418; color: #E6EAEC; border-radius: 6px; padding: 1.3rem 1.5rem; font-family: "JetBrains Mono", monospace; font-size: 0.85rem; line-height: 1.9; overflow-x: auto; }
+  :root[data-theme="dark"] .run, :root:not([data-theme="light"]) .run { background: #05080A; border: 1px solid var(--hairline); }
+  .run .c { color: #6FA8C0; }
+  .run .d { color: #8A959B; }
+
+  .ports-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin-top: 1.5rem; }
+  .ports-table td { padding: 0.6rem 0; border-bottom: 1px solid var(--hairline-soft); vertical-align: top; }
+  .ports-table td:first-child { font-family: "JetBrains Mono", monospace; font-size: 0.78rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; width: 30%; padding-right: 1rem; }
+  .ports-table td:last-child { color: var(--ink-soft); }
+
+  .nongoals { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1.4rem; }
+  .nongoal { font-size: 0.82rem; color: var(--ink-faint); font-family: "JetBrains Mono", monospace; padding: 3px 9px; border: 1px solid var(--hairline-soft); border-radius: 3px; text-decoration: line-through; text-decoration-color: var(--hot); }
+
+  footer { border-top: 1px solid var(--hairline); padding: 2.5rem 0 4rem; color: var(--ink-faint); font-size: 0.86rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
+
+  @media (max-width: 680px) {
+    body { font-size: 16px; }
+    .qual { grid-template-columns: 1fr; }
+    .qual .inp { border-right: none; border-bottom: 1px solid var(--hairline-soft); }
+    .msg { max-width: 88%; }
+    .fstage { grid-template-columns: 5.5rem 1fr 3rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap hero">
+  <p class="eyebrow">Portfolio piece · Agent safety</p>
+  <h1>An agent that takes real actions — and can explain every one of them</h1>
+  <p class="lede">It receives an inbound lead from a webhook, holds an SMS conversation to qualify it, checks live calendar availability, books the appointment, writes the outcome back to a CRM, and notifies the business — with a human approval gate before anything irreversible.</p>
+
+  <blockquote class="claim">
+    <span class="q">The LLM handles conversation.</span> Decisions and actions are governed by code, logged, and reversible — so the business can explain why any lead was tiered the way it was.
+  </blockquote>
+
+  <div class="badges">
+    <span class="badge">LangGraph</span>
+    <span class="badge">FastAPI</span>
+    <span class="badge">Postgres 16</span>
+    <span class="badge">Ports &amp; adapters</span>
+    <span class="badge">Twilio / mock SMS</span>
+    <span class="badge">Google Calendar / in-memory</span>
+    <span class="badge">Streamlit</span>
+    <span class="badge">Docker Compose</span>
+  </div>
+
+  <dl class="meta-row">
+    <div><dt>Runs offline</dt><dd>Zero credentials in mock mode</dd></div>
+    <div><dt>Audit</dt><dd>Every LLM &amp; tool call persisted</dd></div>
+    <div><dt>Replay</dt><dd>20 scenarios, deterministic</dd></div>
+    <div><dt>Build</dt><dd>Two weekends, milestone-gated</dd></div>
+  </dl>
+</div>
+
+<section>
+  <div class="wrap col">
+    <p class="eyebrow">The problem</p>
+    <h2>Demos show an agent talking. Clients need one that acts — safely.</h2>
+    <p>The highest-ticket lead-response postings ask for an agent that books appointments, updates a CRM, and messages customers. Most demos stop at the conversation because the moment an agent writes to a real system, the questions get hard: what if the model misreads the address, double-books a slot, or texts someone who never consented?</p>
+    <p>This project puts every consequential decision in deterministic code the business can read, routes irreversible actions through an approval gate, and records every model call and tool call with its inputs, outputs, latency and cost. The conversation is the only part the LLM owns.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Architecture</p>
+    <h2 class="col">A state machine with one gate that matters</h2>
+    <p class="lead-in">Nodes are explicit and transitions are tested. Postgres checkpointing means a conversation can be interrupted and resumed mid-thread. The graph never imports a vendor SDK — SMS, calendar and CRM each sit behind a port with a mock and a real adapter.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 940 336" role="img" aria-label="LangGraph state machine: capture, extract, qualify, decide, then an approval gate before schedule, book, notify and close. A follow-up branch loops back to extract when a lead goes silent; a human handoff branch catches tool failures and abuse; below the threshold the gate routes to a human approval queue and resumes on approval. A ports-and-adapters boundary below shows the SMS, Calendar and CRM ports, each with a mock and a real adapter, plus the tool_calls audit wrapper.">
+          <defs>
+            <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker>
+            <marker id="a2g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#B26A00"/></marker>
+          </defs>
+          <g font-family="JetBrains Mono, monospace" font-size="11.5">
+            <text x="16" y="20" fill="currentColor" font-size="10" letter-spacing="1.5">LANGGRAPH STATE MACHINE · postgres-checkpointed</text>
+
+            <!-- main flow -->
+            <rect x="16" y="44" width="80" height="38" rx="4" fill="none" stroke="currentColor"/><text x="56" y="68" text-anchor="middle" fill="currentColor">capture</text>
+            <rect x="118" y="44" width="80" height="38" rx="4" fill="none" stroke="currentColor"/><text x="158" y="68" text-anchor="middle" fill="currentColor">extract</text>
+            <rect x="220" y="44" width="80" height="38" rx="4" fill="none" stroke="currentColor"/><text x="260" y="68" text-anchor="middle" fill="currentColor">qualify</text>
+            <rect x="322" y="44" width="80" height="38" rx="4" fill="none" stroke="currentColor"/><text x="362" y="68" text-anchor="middle" fill="currentColor">decide</text>
+            <rect x="424" y="38" width="104" height="50" rx="4" fill="#B26A00" opacity="0.14" stroke="#B26A00" stroke-width="1.5"/>
+            <text x="476" y="59" text-anchor="middle" fill="currentColor">approval</text>
+            <text x="476" y="74" text-anchor="middle" fill="currentColor">gate</text>
+            <rect x="560" y="44" width="84" height="38" rx="4" fill="none" stroke="currentColor"/><text x="602" y="68" text-anchor="middle" fill="currentColor">schedule</text>
+            <rect x="668" y="44" width="62" height="38" rx="4" fill="none" stroke="currentColor"/><text x="699" y="68" text-anchor="middle" fill="currentColor">book</text>
+            <rect x="756" y="44" width="80" height="38" rx="4" fill="none" stroke="currentColor"/><text x="796" y="68" text-anchor="middle" fill="currentColor">notify</text>
+
+            <line x1="96" y1="63" x2="114" y2="63" stroke="currentColor" marker-end="url(#a2)"/>
+            <line x1="198" y1="63" x2="216" y2="63" stroke="currentColor" marker-end="url(#a2)"/>
+            <line x1="300" y1="63" x2="318" y2="63" stroke="currentColor" marker-end="url(#a2)"/>
+            <line x1="402" y1="63" x2="420" y2="63" stroke="currentColor" marker-end="url(#a2)"/>
+            <line x1="528" y1="63" x2="556" y2="63" stroke="#B26A00" marker-end="url(#a2g)"/>
+            <text x="542" y="34" text-anchor="middle" fill="#B26A00" font-size="9">≥ threshold</text>
+            <line x1="644" y1="63" x2="664" y2="63" stroke="currentColor" marker-end="url(#a2)"/>
+            <line x1="730" y1="63" x2="752" y2="63" stroke="currentColor" marker-end="url(#a2)"/>
+
+            <!-- close -->
+            <rect x="756" y="120" width="80" height="38" rx="4" fill="none" stroke="currentColor"/><text x="796" y="144" text-anchor="middle" fill="currentColor">close</text>
+            <line x1="796" y1="82" x2="796" y2="117" stroke="currentColor" marker-end="url(#a2)"/>
+
+            <!-- follow_up -->
+            <path d="M256 82 C256 106 158 106 158 86" fill="none" stroke="currentColor" stroke-dasharray="3 3" marker-end="url(#a2)"/>
+            <text x="207" y="120" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.85">follow_up · silent lead</text>
+
+            <!-- human_handoff -->
+            <rect x="300" y="140" width="150" height="40" rx="4" fill="none" stroke="currentColor" stroke-dasharray="4 3"/>
+            <text x="375" y="157" text-anchor="middle" fill="currentColor" font-size="10.5">human_handoff</text>
+            <text x="375" y="171" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.75">tool failure · abuse</text>
+            <line x1="362" y1="82" x2="372" y2="137" stroke="currentColor" stroke-dasharray="3 3" marker-end="url(#a2)"/>
+
+            <!-- approval queue -->
+            <rect x="520" y="140" width="150" height="40" rx="4" fill="none" stroke="#B26A00" stroke-dasharray="4 3"/>
+            <text x="595" y="157" text-anchor="middle" fill="currentColor" font-size="10.5">human approval queue</text>
+            <text x="595" y="171" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.75">approve · edit · reject</text>
+            <path d="M470 88 C462 112 500 128 536 138" fill="none" stroke="#B26A00" stroke-dasharray="3 3" marker-end="url(#a2g)"/>
+            <text x="446" y="122" text-anchor="middle" fill="#B26A00" font-size="9">below threshold</text>
+            <path d="M626 140 C640 116 620 92 610 84" fill="none" stroke="#B26A00" stroke-dasharray="3 3" marker-end="url(#a2g)"/>
+            <text x="662" y="116" text-anchor="middle" fill="#B26A00" font-size="9">on approve</text>
+
+            <!-- ports boundary -->
+            <line x1="16" y1="206" x2="924" y2="206" stroke="currentColor" stroke-dasharray="1 4" opacity="0.45"/>
+            <text x="16" y="226" fill="#1F5673" font-size="10" letter-spacing="1.4">PORTS &amp; ADAPTERS · the graph imports no vendor SDK</text>
+
+            <rect x="16" y="240" width="150" height="60" rx="4" fill="#1F5673" opacity="0.1" stroke="#1F5673"/>
+            <text x="91" y="264" text-anchor="middle" fill="currentColor">SmsPort</text>
+            <text x="91" y="281" text-anchor="middle" fill="currentColor" font-size="9.5" opacity="0.8">Mock · Twilio</text>
+
+            <rect x="180" y="240" width="180" height="60" rx="4" fill="#1F5673" opacity="0.1" stroke="#1F5673"/>
+            <text x="270" y="264" text-anchor="middle" fill="currentColor">CalendarPort</text>
+            <text x="270" y="281" text-anchor="middle" fill="currentColor" font-size="9.5" opacity="0.8">InMemory · Google</text>
+
+            <rect x="374" y="240" width="170" height="60" rx="4" fill="#1F5673" opacity="0.1" stroke="#1F5673"/>
+            <text x="459" y="264" text-anchor="middle" fill="currentColor">CrmPort</text>
+            <text x="459" y="281" text-anchor="middle" fill="currentColor" font-size="9.5" opacity="0.8">Postgres · HubSpot</text>
+
+            <rect x="558" y="240" width="366" height="60" rx="4" fill="none" stroke="currentColor"/>
+            <text x="741" y="264" text-anchor="middle" fill="currentColor">tool_calls audit wrapper</text>
+            <text x="741" y="281" text-anchor="middle" fill="currentColor" font-size="9.5" opacity="0.8">request · response · latency · retries · outcome</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>The amber path is the only one that can touch a real system, and it passes through the gate. Everything below the dotted line is swappable: <code>mock</code> mode wires the in-memory adapters and needs no credentials at all.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The differentiator · deterministic qualification</p>
+    <h2 class="col">The model never decides the tier</h2>
+    <p class="lead-in">A rules engine reads <code>config/qualification_rules.yaml</code> and produces a tier, a numeric score, and a <code>reasons[]</code> list naming every rule that fired. Identical input always produces identical output. The rules are inspectable and changeable without touching code.</p>
+    <div class="panel">
+      <div class="panel-head">
+        <span class="title">qualify() · rules_engine v3 · lead #4471</span>
+        <span class="flag">Representative output</span>
+      </div>
+      <div class="qual">
+        <div class="inp">
+          <h3>Extracted fields</h3>
+          <dl class="kv">
+            <dt>service_type</dt><dd>AC repair</dd>
+            <dt>problem</dt><dd>&ldquo;not cooling, runs constantly&rdquo;</dd>
+            <dt>postcode</dt><dd>SW2 1AA</dd>
+            <dt>urgency</dt><dd>high</dd>
+            <dt>time_window</dt><dd>weekday afternoons</dd>
+            <dt>consent</dt><dd>true</dd>
+          </dl>
+        </div>
+        <div class="out">
+          <h3>Rules fired</h3>
+          <div class="rules">
+            <div class="rule"><span class="mark">✓</span> service_area(SW2) → in coverage</div>
+            <div class="rule"><span class="mark">✓</span> service_type(AC repair) → supported</div>
+            <div class="rule"><span class="mark">✓</span> urgency(high) → +30 score</div>
+            <div class="rule"><span class="mark">✓</span> info_completeness → 6/6 fields</div>
+            <div class="rule"><span class="mark no">·</span> spam_signals → none detected</div>
+          </div>
+          <div class="tier">
+            <span class="pill hot">Hot</span>
+            <span class="score">score 88 / 100</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="no-llm">If the tier decision ever gets passed to the model, the build stops and flags it. The LLM extracts fields into a Pydantic model with per-field confidence — and never invents a value; missing stays missing.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The demo · conversation with actions</p>
+    <h2 class="col">Tool calls interleaved at the point they fire</h2>
+    <p class="lead-in">The dashboard&rsquo;s conversation viewer shows the SMS thread with every tool call inline, so you can read exactly when the agent checked the calendar, when qualification ran, and when the approval policy let it proceed.</p>
+    <div class="panel">
+      <div class="panel-head">
+        <span class="title">conversation #4471 · HVAC · mock transport</span>
+        <span class="flag">Representative output</span>
+      </div>
+      <div class="thread" style="display:flex; flex-direction:column;">
+        <div class="tool sys"><span class="name">webhook.lead_received</span><span>name=Dana · &ldquo;AC not cooling&rdquo; · SW2 1AA</span></div>
+        <div class="msg out">Hi Dana — sorry the AC isn&rsquo;t keeping up. Is this for a home or a business?</div>
+        <div class="msg in">home</div>
+        <div class="msg out">Got it. And is it not cooling at all, or cooling weakly?</div>
+        <div class="msg in">runs all the time but the house stays warm</div>
+        <div class="tool sys"><span class="name">calendar.find_availability</span><span>window=48h</span><span class="res">→ 3 slots</span></div>
+        <div class="msg out">A technician can come tomorrow 1–3pm or Thursday 9–11am. Which works?</div>
+        <div class="msg in">tomorrow is great</div>
+        <div class="tool decision sys"><span class="name">qualify → HOT</span><span>reasons: in_service_area, service_type_supported, urgency=high, consent=true</span></div>
+        <div class="tool decision sys"><span class="name">approval_policy</span><span>confidence 0.93 ≥ threshold 0.85</span><span class="res">→ auto-proceed</span></div>
+        <div class="tool sys"><span class="name">calendar.book</span><span>slot=tomorrow 13:00–15:00</span><span class="res">→ confirmed</span></div>
+        <div class="tool sys"><span class="name">crm.upsert_contact + attach_qualification</span><span class="res">→ written</span></div>
+        <div class="tool sys"><span class="name">sms.send</span><span>confirmation</span><span class="res">→ delivered</span></div>
+        <div class="msg out">Booked for tomorrow 1–3pm. You&rsquo;ll get a confirmation text shortly. Anything else?</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The demo · approval gate</p>
+    <h2 class="col">When confidence is low, it waits for a person</h2>
+    <p class="lead-in">Below the confidence threshold, the graph checkpoints and queues the action. A reviewer approves, rejects, or edits-then-approves — each recorded with actor and timestamp. The default threshold is set so at least one scenario in the suite always lands here.</p>
+    <div class="panel">
+      <div class="panel-head">
+        <span class="title">approval queue · depth 2</span>
+        <span class="flag">Representative output</span>
+      </div>
+      <div class="queue-card">
+        <div class="queue-item">
+          <div class="top"><span class="who">Lead #4482 · Priya</span><span class="conf">extraction confidence 0.71</span></div>
+          <div class="act">book → calendar.hold(slot=Fri 10:00) · address parsed as &ldquo;12 Elm Ct&rdquo; (low confidence)</div>
+          <div class="btns"><button class="qbtn primary">Approve</button><button class="qbtn">Edit &amp; approve</button><button class="qbtn">Reject</button></div>
+        </div>
+        <div class="queue-item">
+          <div class="top"><span class="who">Lead #4485 · unknown</span><span class="conf">consent flag ambiguous</span></div>
+          <div class="act">sms.send (live mode) → held pending explicit consent confirmation</div>
+          <div class="btns"><button class="qbtn primary">Approve</button><button class="qbtn">Edit &amp; approve</button><button class="qbtn">Reject</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">What it measures</p>
+    <h2 class="col">The funnel, and how far the agent got on its own</h2>
+    <p class="lead-in">The dashboard shows leads moving through each stage with drop-off, plus the operational numbers a business owner actually asks about.</p>
+    <div class="panel">
+      <div class="panel-head"><span class="title">funnel · last 100 leads</span><span class="flag">Representative output</span></div>
+      <div class="funnel">
+        <div class="fstage"><span class="flab">leads in</span><div class="fbar" style="width:100%"></div><span class="fval">100</span></div>
+        <div class="fstage"><span class="flab">qualified</span><div class="fbar" style="width:74%"></div><span class="fval">74</span></div>
+        <div class="fstage"><span class="flab">booked</span><div class="fbar" style="width:45%"></div><span class="fval">45</span></div>
+        <div class="fstage"><span class="flab">no-contact</span><div class="fbar" style="width:12%"></div><span class="fval">12</span></div>
+      </div>
+    </div>
+    <div class="statgrid">
+      <div class="stat"><div class="v">4.2s</div><div class="k">median first-response latency</div></div>
+      <div class="stat"><div class="v">98.6%</div><div class="k">tool-call success rate</div></div>
+      <div class="stat"><div class="v">61%</div><div class="k">booked without human intervention</div></div>
+      <div class="stat"><div class="v">2</div><div class="k">approval queue depth</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The eval story · scenario replay</p>
+    <h2 class="col">Twenty scripted scenarios, identical every run</h2>
+    <p class="lead-in">Each scenario is a YAML of inbound messages plus an expected outcome. With a stubbed LLM returning recorded responses, <code>make scenarios</code> produces identical results every time — and a failure prints which node diverged.</p>
+    <div class="scenarios">
+      <div class="scn"><span class="ok">pass</span> happy path → booked</div>
+      <div class="scn"><span class="ok">pass</span> out of service area → polite decline</div>
+      <div class="scn"><span class="ok">pass</span> ambiguous problem → asks clarifying Qs</div>
+      <div class="scn"><span class="ok">pass</span> lead goes silent → follow-up → close</div>
+      <div class="scn"><span class="ok">pass</span> no availability → offers alternatives</div>
+      <div class="scn"><span class="ok">pass</span> reschedule existing appointment</div>
+      <div class="scn"><span class="ok">pass</span> spam / abuse → disqualified, no contact</div>
+      <div class="scn"><span class="ok">pass</span> calendar API fails mid-book → handoff</div>
+      <div class="scn"><span class="ok">pass</span> duplicate submission of same lead</div>
+      <div class="scn"><span class="ok">pass</span> low-confidence extraction → approval gate</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Run it</p>
+    <h2 class="col">Clean clone to twenty passing scenarios, no credentials</h2>
+    <p class="lead-in">Mock mode wires mock calendar, mock CRM and mock SMS behind the same interfaces the real adapters use. No test can send a real SMS or write to a real calendar — any that could is a bug.</p>
+    <div class="run">
+<span class="d">$</span> cp .env.example .env <span class="c"># mock mode is the default</span><br>
+<span class="d">$</span> docker compose up <span class="c"># Postgres + app</span><br>
+<span class="d">$</span> make scenarios <span class="c"># 20 scripted scenarios, deterministic replay</span><br>
+<span class="d">$</span> make ui <span class="c"># Streamlit: funnel, conversation viewer, approval queue</span>
+    </div>
+    <table class="ports-table">
+      <tr><td>Orchestration</td><td>LangGraph with explicit nodes and a Postgres checkpointer — conversations interrupt and resume mid-thread</td></tr>
+      <tr><td>Qualification</td><td>Rules engine over <code>qualification_rules.yaml</code> → tier, score, <code>reasons[]</code>. Fully table-tested; deterministic</td></tr>
+      <tr><td>Extraction</td><td>LLM into a Pydantic model with per-field confidence; missing values stay null</td></tr>
+      <tr><td>SMS / Calendar / CRM</td><td>Each a port with a mock and a real adapter; the graph imports neither vendor SDK directly</td></tr>
+      <tr><td>Audit trail</td><td>Every LLM call and tool call persisted with inputs, outputs, latency, retry count and cost</td></tr>
+      <tr><td>Approval gate</td><td>Policy checks confidence against a configurable threshold; low-confidence actions checkpoint and queue</td></tr>
+    </table>
+    <div class="nongoals">
+      <span class="nongoal">auth &amp; login UI</span>
+      <span class="nongoal">billing</span>
+      <span class="nongoal">voice / telephony</span>
+      <span class="nongoal">production multi-tenancy</span>
+      <span class="nongoal">fine-tuning</span>
+      <span class="nongoal">Kubernetes / cloud deploy</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Lead-to-Booked Agent — portfolio piece. Mock-first, milestone-gated, two-weekend build.</span>
+    <span>Python 3.11 · uv · LangGraph · FastAPI · Postgres 16</span>
+  </div>
+</footer>
