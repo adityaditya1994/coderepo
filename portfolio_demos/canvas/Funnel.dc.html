@@ -8,94 +8,110 @@
 <x-dc>
 <helmet>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
-    body { margin: 0; background: #F0EEE9; min-height: 100%; }
-    a { color: #1F5673; } a:hover { color: #164054; }
+    @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+    body { margin: 0; background: #E8EDF1; min-height: 100%; }
+    a { color: #1C6E92; } a:hover { color: #0F4258; }
   </style>
 </helmet>
-<div style="width: 1360px; background: #F0EEE9; font-family: 'Public Sans', system-ui, sans-serif; color: #1B1D21; display: flex;">
+<div style="width: 1360px; background: #E8EDF1; font-family: 'Public Sans', system-ui, sans-serif; color: #182833;">
 
-  <div style="width: 288px; flex-shrink: 0; background: #F9F7F3; border-right: 1px solid #E5E1D8; padding: 26px 22px; display: flex; flex-direction: column; gap: 22px; min-height: 1060px;">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <div style="width: 26px; height: 26px; border-radius: 6px; background: #1F5673; display: flex; align-items: center; justify-content: center;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+  <!-- header -->
+  <div style="background: #153C4F; padding: 32px 46px; display: flex; align-items: flex-end; justify-content: space-between; gap: 28px;">
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 11px;">
+        <div style="width: 30px; height: 30px; border-radius: 8px; background: #2E7DA0; display: flex; align-items: center; justify-content: center;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+        </div>
+        <span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 18px; color: #fff; letter-spacing: -0.02em;">LeadAgent</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9BC0D2;">funnel · last 100 leads</span>
       </div>
-      <span style="font-weight: 700; font-size: 15.5px; letter-spacing: -0.01em;">LeadAgent</span>
+      <h1 style="margin: 0; font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 27px; color: #fff; letter-spacing: -0.02em;">61% booked with no human in the loop</h1>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 3px;">
-      <div style="padding: 8px 12px; border-radius: 6px; background: #E1EBF0; color: #164054; font-weight: 600; font-size: 14px;">Funnel</div>
-      <div style="padding: 8px 12px; border-radius: 6px; color: #4C4F55; font-size: 14px;">Conversations</div>
-      <div style="padding: 8px 12px; border-radius: 6px; color: #4C4F55; font-size: 14px;">Approval queue</div>
-    </div>
-    <div style="height: 1px; background: #E5E1D8;"></div>
-    <div style="display: flex; flex-direction: column; gap: 11px;">
-      <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: #7E828A;">Window</div>
-      <div style="border: 1px solid #D3CEC2; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center;">last 100 leads<span style="color: #7E828A;">&#9662;</span></div>
-      <div style="border: 1px solid #D3CEC2; border-radius: 6px; padding: 8px 11px; background: #fff; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center;">all service types<span style="color: #7E828A;">&#9662;</span></div>
-      <div style="margin-top: 4px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #7E828A; line-height: 1.7;">replay suite: 20 / 20 pass<br>deterministic</div>
+    <div style="background: #2E8B57; border-radius: 10px; padding: 11px 16px; display: flex; flex-direction: column; gap: 2px;">
+      <span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 20px; color: #fff;">20 / 20</span>
+      <span style="font-size: 11.5px; color: #CDE9D9;">replay scenarios pass</span>
     </div>
   </div>
 
-  <div style="flex: 1; padding: 34px 44px; display: flex; flex-direction: column; gap: 24px;">
-    <div style="display: flex; flex-direction: column; gap: 4px;">
-      <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.015em;">Lead funnel</h1>
-      <span style="font-size: 14px; color: #4C4F55;">Stage-by-stage drop-off, and how far the agent got without a human</span>
-    </div>
+  <div style="padding: 30px 46px 36px; display: flex; flex-direction: column; gap: 22px;">
 
-    <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
-      <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #7E828A;">Funnel</span>
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div style="display: grid; grid-template-columns: 120px 1fr 90px; gap: 16px; align-items: center;">
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55;">leads in</span>
-          <div style="height: 32px; background: #1F5673; border-radius: 4px; width: 100%;"></div>
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; text-align: right; font-weight: 600;">100</span>
+    <!-- funnel graphic -->
+    <div style="background: #fff; border: 1px solid #DCE3E8; border-radius: 14px; padding: 26px 30px; box-shadow: 0 10px 30px rgba(21,44,58,0.07); display: flex; flex-direction: column; gap: 16px;">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #8A97A0;">Stage-by-stage</span>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 20px; width: 100%;">
+          <div style="width: 96%; height: 58px; background: #12506B; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; margin: 0 auto;">
+            <span style="font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 15px; color: #fff;">Leads in</span>
+            <span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 24px; color: #fff; font-variant-numeric: tabular-nums;">100</span>
+          </div>
         </div>
-        <div style="display: grid; grid-template-columns: 120px 1fr 90px; gap: 16px; align-items: center;">
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55;">qualified</span>
-          <div style="display: flex; align-items: center; gap: 12px;"><div style="height: 32px; background: #2F6C8C; border-radius: 4px; width: 74%;"></div><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; color: #9A5B00;">&minus;26 not in area / incomplete</span></div>
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; text-align: right; font-weight: 600;">74</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C67C10" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9A5B00;">&minus;26 · out of service area or incomplete info</span>
         </div>
-        <div style="display: grid; grid-template-columns: 120px 1fr 90px; gap: 16px; align-items: center;">
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55;">booked</span>
-          <div style="display: flex; align-items: center; gap: 12px;"><div style="height: 32px; background: #4F87A5; border-radius: 4px; width: 45%;"></div><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; color: #9A5B00;">&minus;29 no slot / went cold</span></div>
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; text-align: right; font-weight: 600;">45</span>
+        <div style="width: 74%; height: 58px; background: #1C6E92; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px;">
+          <span style="font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 15px; color: #fff;">Qualified</span>
+          <span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 24px; color: #fff; font-variant-numeric: tabular-nums;">74</span>
         </div>
-        <div style="display: grid; grid-template-columns: 120px 1fr 90px; gap: 16px; align-items: center;">
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #4C4F55;">no-contact</span>
-          <div style="height: 32px; background: #A9BDC9; border-radius: 4px; width: 12%;"></div>
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; text-align: right; font-weight: 600;">12</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C67C10" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9A5B00;">&minus;29 · no matching slot or lead went cold</span>
         </div>
+        <div style="width: 45%; height: 58px; background: #3E93B8; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px;">
+          <span style="font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 15px; color: #fff;">Booked</span>
+          <span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 24px; color: #fff; font-variant-numeric: tabular-nums;">45</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 26px; padding-top: 8px; border-top: 1px solid #EDF1F3;">
+        <div style="display: flex; align-items: baseline; gap: 8px;"><span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 20px; color: #1C6E92;">74%</span><span style="font-size: 12.5px; color: #54626C;">lead &rarr; qualified</span></div>
+        <div style="display: flex; align-items: baseline; gap: 8px;"><span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 20px; color: #1C6E92;">61%</span><span style="font-size: 12.5px; color: #54626C;">qualified &rarr; booked</span></div>
+        <div style="display: flex; align-items: baseline; gap: 8px;"><span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 20px; color: #1C6E92;">45%</span><span style="font-size: 12.5px; color: #54626C;">end-to-end conversion</span></div>
       </div>
     </div>
 
+    <!-- stat tiles -->
     <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
-      <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;">
-        <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">4.2s</span>
-        <span style="font-size: 12.5px; color: #7E828A; line-height: 1.4;">median first-response latency</span>
+      <div style="background: #fff; border: 1px solid #DCE3E8; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 18px rgba(21,44,58,0.05);">
+        <span style="width: 34px; height: 34px; border-radius: 9px; background: #E3EFF4; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C6E92" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+        <span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 27px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">4.2s</span>
+        <span style="font-size: 12.5px; color: #54626C; line-height: 1.4;">median first-response latency</span>
       </div>
-      <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;">
-        <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">98.6%</span>
-        <span style="font-size: 12.5px; color: #7E828A; line-height: 1.4;">tool-call success rate</span>
+      <div style="background: #fff; border: 1px solid #DCE3E8; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 18px rgba(21,44,58,0.05);">
+        <span style="width: 34px; height: 34px; border-radius: 9px; background: #E0F0E7; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E8B57" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        <span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 27px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: #2E8B57;">98.6%</span>
+        <span style="font-size: 12.5px; color: #54626C; line-height: 1.4;">tool-call success rate</span>
       </div>
-      <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;">
-        <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">61%</span>
-        <span style="font-size: 12.5px; color: #7E828A; line-height: 1.4;">booked without human intervention</span>
+      <div style="background: #fff; border: 1px solid #DCE3E8; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 18px rgba(21,44,58,0.05);">
+        <span style="width: 34px; height: 34px; border-radius: 9px; background: #F7E9D2; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C67C10" stroke-width="2.2" stroke-linecap="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></span>
+        <span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 27px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: #C67C10;">61%</span>
+        <span style="font-size: 12.5px; color: #54626C; line-height: 1.4;">booked without human intervention</span>
       </div>
-      <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;">
-        <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">2</span>
-        <span style="font-size: 12.5px; color: #7E828A; line-height: 1.4;">approval queue depth</span>
+      <div style="background: #fff; border: 1px solid #DCE3E8; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 18px rgba(21,44,58,0.05);">
+        <span style="width: 34px; height: 34px; border-radius: 9px; background: #E3EFF4; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C6E92" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h6"/></svg></span>
+        <span style="font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 27px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">2</span>
+        <span style="font-size: 12.5px; color: #54626C; line-height: 1.4;">approval queue depth right now</span>
       </div>
     </div>
 
-    <div style="background: #fff; border: 1px solid #E5E1D8; border-radius: 10px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px;">
-      <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #7E828A;">Tier mix — last 100</span>
-      <div style="display: flex; gap: 6px; height: 34px; border-radius: 5px; overflow: hidden;">
-        <div style="width: 22%; background: #BE3A3A; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px;">hot 22</div>
-        <div style="width: 40%; background: #C9861C; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px;">warm 40</div>
-        <div style="width: 24%; background: #4F80A3; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px;">cold 24</div>
-        <div style="width: 14%; background: #9A9AA0; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px;">disq 14</div>
+    <!-- tier mix -->
+    <div style="background: #fff; border: 1px solid #DCE3E8; border-radius: 14px; padding: 22px 26px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 18px rgba(21,44,58,0.05);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #8A97A0;">Tier mix — last 100 leads</span>
+        <span style="font-size: 12.5px; color: #54626C;">every tier carries a <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">reasons[]</code> string — the model never sets it</span>
       </div>
-      <span style="font-size: 13px; color: #4C4F55; line-height: 1.55;">Every tier assignment carries a <code style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px;">reasons[]</code> string from the rules engine — the model never sets the tier.</span>
+      <div style="display: flex; gap: 5px; height: 42px; border-radius: 7px; overflow: hidden;">
+        <div style="width: 22%; background: #D14343; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 13px;">Hot · 22</div>
+        <div style="width: 40%; background: #E0982C; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 13px;">Warm · 40</div>
+        <div style="width: 24%; background: #4E86AE; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 13px;">Cold · 24</div>
+        <div style="width: 14%; background: #8E9298; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 13px;">Disq · 14</div>
+      </div>
+      <div style="display: flex; gap: 22px; font-size: 12px; color: #54626C;">
+        <span>Hot &amp; Warm route to booking</span>
+        <span>Cold enters a nurture sequence</span>
+        <span>Disqualified gets a polite decline, no further contact</span>
+      </div>
     </div>
   </div>
 
